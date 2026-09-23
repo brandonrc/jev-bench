@@ -11,7 +11,7 @@ class Jev:
     def _post(self, body):
         for attempt in range(5):
             r = self.client.post("/v1/systemone", json=body)
-            if r.status_code in (429, 529): time.sleep(min(2 ** attempt, 20)); continue
+            if r.status_code in (429, 500, 502, 503, 529): time.sleep(min(2 ** attempt, 20)); continue
             r.raise_for_status(); return r.json()
         raise RuntimeError(f"jev {r.status_code}: {r.text[:200]}")
     def answer(self, state, question, qkey):
