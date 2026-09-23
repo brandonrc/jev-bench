@@ -1,0 +1,6 @@
+{"engine": "jev", "mode": "concurrency=1", "p50_ms": 186.42639700010477, "p95_ms": 266.3411410003391, "items_per_s": 5.188561131690491, "task": "quarantine", "n": 200, "ts": 1790203473.9271367}
+{"engine": "jev", "mode": "concurrency=4", "p50_ms": 201.84814799995365, "p95_ms": 302.08377500002825, "items_per_s": 18.952645781878715, "task": "quarantine", "n": 200, "ts": 1790203484.4798288}
+{"engine": "jev", "mode": "concurrency=16", "p50_ms": 207.38781399995787, "p95_ms": 345.0008280005932, "items_per_s": 68.72997050794609, "task": "quarantine", "n": 200, "ts": 1790203487.3898823}
+{"engine": "jev", "mode": "concurrency=32", "p50_ms": 351.9430979995377, "p95_ms": 442.1825150002405, "items_per_s": 80.96001937600573, "task": "quarantine", "n": 200, "ts": 1790203489.8603055}
+{"engine": "jev", "mode": "concurrency=64", "p50_ms": 359.3504769996798, "p95_ms": 449.7912719998567, "items_per_s": 150.08636006684594, "task": "quarantine", "n": 200, "ts": 1790203491.1929395}
+{"engine": "jev", "mode": "fanout_5q_per_call", "p50_ms": 197.20067700018262, "p95_ms": 299.0196760001709, "decisions_per_s": 23.497553748156385, "task": "quarantine", "n": 200, "ts": 1790203499.704551}
