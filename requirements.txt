@@ -1,0 +1,5 @@
+# Python 3.12 recommended (uv venv --python 3.12). Triton needs Python headers; system 3.14 on Bazzite has none.
+laya[serve]>=0.3.11
+anthropic>=1.8
+httpx>=0.28
+pydantic>=2
