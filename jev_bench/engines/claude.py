@@ -32,7 +32,6 @@ class Claude:
         else: Model = self._models.setdefault(qkey + str(tuple(spec["criteria"])), choice_model(list(spec["criteria"])))
         kw = {}
         if self.effort: kw["output_config"] = {"effort": self.effort}
-        if self.model.startswith("claude-haiku"): kw["temperature"] = 0
         r = self.client.messages.parse(
             model=self.model, max_tokens=512,
             system=[{"type": "text", "text": self._system(spec), "cache_control": {"type": "ephemeral"}}],
