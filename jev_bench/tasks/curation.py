@@ -37,7 +37,7 @@ NAME = "curation"
 QKEY = "verdict"
 CRITERIA = {
     "malicious": "install/postinstall scripts that download or execute remote code, obfuscated payloads, credential or env exfiltration",
-    "abandoned": "no release in years, deprecated flag, unmaintained with open security issues, dead repository",
+    "abandoned": "deprecated flag set, OR last release more than 4 years ago (treat an old last_release as abandoned even when not flagged), unmaintained with open security issues, dead repository",
     "license_incompatible": "license is copyleft, source-available, noncommercial, or missing, conflicting with a permissive-only policy",
     "benign": "actively maintained, permissive license, ordinary code, no suspicious scripts",
 }
