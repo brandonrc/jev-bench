@@ -3,3 +3,4 @@ laya[serve]>=0.3.11
 anthropic>=1.8
 httpx>=0.28
 pydantic>=2
+rapidfuzz>=3
