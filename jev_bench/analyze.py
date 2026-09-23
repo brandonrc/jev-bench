@@ -1,5 +1,9 @@
 """Aggregate results/raw/*.jsonl into results/summary.md (+ summary.json)."""
-import glob, json, collections, statistics, math, os, sys
+import glob, json, collections, statistics, math, os, sys, importlib
+
+def _equiv(task):
+    try: return getattr(importlib.import_module(f"jev_bench.tasks.{task}"), "equivalent", None)
+    except Exception: return None
 
 def ece(rows, bins=10):
     """Expected calibration error on P(pred)."""
@@ -44,7 +48,9 @@ def main(raw="results/raw", out="results"):
         for r in ok:
             for k in ("variant", "scenario", "hard", "relation", "source"):
                 if k in r["meta"]: by_meta[f"{k}={r['meta'][k]}"].append(r["pred"] == r["label"])
+        eq = _equiv(task)
         summary.append({"task": task, "engine": eng, "n": len(rs), "errors": len(rs) - len(ok),
+                        "lenient_accuracy": statistics.mean(eq(r["label"], r["pred"]) for r in ok) if (ok and eq) else None,
                         "accuracy": statistics.mean(r["pred"] == r["label"] for r in ok) if ok else float("nan"),
                         "macro_f1": macro_f1(ok), "ece": ece(ok), "coverage@0.9": cov, "acc@0.9": cov_acc,
                         "p50_ms": pct(lat, .5), "p95_ms": pct(lat, .95), "p99_ms": pct(lat, .99), "throughput_per_s": thru,
@@ -52,9 +58,9 @@ def main(raw="results/raw", out="results"):
                         "slices": {k: round(statistics.mean(v), 3) for k, v in sorted(by_meta.items())}})
     os.makedirs(out, exist_ok=True)
     json.dump(summary, open(os.path.join(out, "summary.json"), "w"), indent=1)
-    L = ["| task | engine | n | acc | macro-F1 | ECE | cov@0.9 | acc@0.9 | p50 ms | p95 ms | p99 ms | items/s | c |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    L = ["| task | engine | n | acc | lenient | macro-F1 | ECE | cov@0.9 | acc@0.9 | p50 ms | p95 ms | p99 ms | items/s | c |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for s in summary:
-        L.append(f"| {s['task']} | {s['engine']} | {s['n']} | {s['accuracy']:.3f} | {s['macro_f1']:.3f} | {s['ece']:.3f} | {s['coverage@0.9']:.2f} | {s['acc@0.9']:.3f} | "
+        L.append(f"| {s['task']} | {s['engine']} | {s['n']} | {s['accuracy']:.3f} | {('%.3f' % s['lenient_accuracy']) if s['lenient_accuracy'] is not None else '-'} | {s['macro_f1']:.3f} | {s['ece']:.3f} | {s['coverage@0.9']:.2f} | {s['acc@0.9']:.3f} | "
                  f"{s['p50_ms']:.0f} | {s['p95_ms']:.0f} | {s['p99_ms']:.0f} | {s['throughput_per_s']:.1f} | {s['concurrency']} |")
     L.append("\n## Slices (accuracy by meta field)\n")
     for s in summary:
