@@ -74,3 +74,15 @@ Results append to `results/pilot_results.jsonl`.
 
 Keys are read from the environment only. Nothing under this repo should ever
 contain a key; `.env` and `*.key` are gitignored.
+
+## Layout
+
+```
+jev_bench/tasks/      one module per task: QUESTION, QKEY, build(n, seed) -> data/<task>/items.jsonl
+jev_bench/engines/    jev (HTTP), laya (in-process or laya-serve), claude (structured outputs)
+jev_bench/run.py      python -m jev_bench.run --engines jev laya:base@cuda:1 claude:claude-haiku-4-5 --tasks license ...
+jev_bench/analyze.py  results/raw/*.jsonl -> results/summary.md (accuracy, macro-F1, ECE, coverage@0.9, p50/p95/p99, items/s)
+jev_bench/speed.py    concurrency sweep, Jev multi-question fan-out, Laya batch inference
+scripts/netcheck.sh   TCP + TLS handshake time to each API host, to separate network from inference
+pilot/                the first 166-item pilot, kept as-is
+```

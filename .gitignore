@@ -4,3 +4,7 @@ __pycache__/
 .env
 *.key
 results/raw/
+# raw downloads cached by task builders; only the built items.jsonl is tracked
+data/**
+!data/*/
+!data/*/items.jsonl
