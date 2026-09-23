@@ -17,13 +17,14 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--out", default="results/raw")
     ap.add_argument("--rebuild", action="store_true", help="rebuild task data instead of reading data/<task>/items.jsonl")
+    ap.add_argument("--split", default=None, choices=[None, "train", "test"], help="restrict to one split (fine-tuned engines must use test)")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     for tname in a.tasks:
         mod = load_task(tname)
         if a.rebuild or not os.path.exists(os.path.join("data", tname, "items.jsonl")):
             write_items(tname, mod.build(0, a.seed))
-        items = read_items(tname)
+        items = read_items(tname, a.split)
         if a.n: items = items[:a.n]
         for spec in a.engines:
             eng = load_engine(spec)
@@ -40,7 +41,7 @@ def main():
                         ms = (time.perf_counter() - t0) * 1000
                         return {"engine": eng.name, "task": tname, "run": run, "concurrency": conc, "id": it.id, "label": it.label,
                                 "pred": ans.pred if ans else None, "conf": ans.conf if ans else None, "ms": round(ms, 2),
-                                "usage": ans.usage if ans else {}, "meta": it.meta, "err": err, "ts": time.time()}
+                                "usage": ans.usage if ans else {}, "raw": ans.raw if ans else None, "meta": it.meta, "err": err, "ts": time.time()}
                     t_start = time.perf_counter()
                     if conc > 1:
                         with cf.ThreadPoolExecutor(conc) as ex: rows = list(ex.map(one, items))

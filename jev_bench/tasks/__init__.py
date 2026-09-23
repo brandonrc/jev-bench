@@ -24,6 +24,12 @@ class Item:
 
 TASK_NAMES = ["license", "typosquat", "curation", "reachability", "quarantine"]
 
+def split_of(item_id: str, test_frac: float = 0.2) -> str:
+    """Deterministic train/test split by item id (stable across rebuilds and machines)."""
+    import hashlib
+    h = int(hashlib.sha1(item_id.encode()).hexdigest()[:8], 16) / 0xFFFFFFFF
+    return "test" if h < test_frac else "train"
+
 def load_task(name: str):
     return importlib.import_module(f"jev_bench.tasks.{name}")
 
@@ -36,6 +42,8 @@ def write_items(task: str, items: list[Item]) -> str:
         for it in items: f.write(json.dumps(it.__dict__) + "\n")
     return p
 
-def read_items(task: str) -> list[Item]:
+def read_items(task: str, split: str | None = None) -> list[Item]:
     with open(cache_path(task, "items.jsonl")) as f:
-        return [Item(**json.loads(l)) for l in f]
+        items = [Item(**json.loads(l)) for l in f]
+    for it in items: it.meta.setdefault("split", split_of(it.id))
+    return [it for it in items if split is None or it.meta["split"] == split]

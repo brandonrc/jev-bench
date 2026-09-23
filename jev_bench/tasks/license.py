@@ -33,7 +33,7 @@ QUESTION = {QKEY: {
 FAMILIES = list(CRITERIA)
 
 BASE_URL = "https://scancode-licensedb.aboutcode.org/"
-CAP_PER_FAMILY = 40        # sources per family; x3 variants keeps the total in the 600-900 range
+CAP_PER_FAMILY = 150        # sources per family; x3 variants keeps the total in the 600-900 range
 MIN_CHARS = 200
 TRUNC_CHARS = 1500
 
