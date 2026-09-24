@@ -95,8 +95,8 @@ scores `[pending: re-evaluation]`. Its latency is set by the 8B encoder: 60 to 3
 3090, 1 ms on a repeated state from cache. A curation queue almost never repeats a state.
 
 **Context is a real dimension for one task and irrelevant for another.** Laya tuned on reachability:
-62% at 256 tokens, 81% at 512, 91% at 768, 86% at 1,536, `[pending: 2,048]`. License: 78 to 84% at every
-cap. The dependency tree needs to be seen whole; a license's obligations are in its first page.
+62% at 256 tokens, 81% at 512, 91% at 768, 86% at 1,536, 80% at 2,048 (the last three are within the noise of 98 items;
+the jump is between 256 and 768). License: 78 to 84% at every cap. The dependency tree needs to be seen whole; a license's obligations are in its first page.
 
 **Confidence gating works for Jev today and needs one more step for the fine-tunes.** Jev's calibration
 error on quarantine was 0.005, and 86% of its reachability answers came back above 0.9 confidence with 91%
