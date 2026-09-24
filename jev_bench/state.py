@@ -8,14 +8,20 @@ import json, functools
 
 STATE_TOKENS_DEFAULT = 768   # + up to 256 for question/options = the 1,024 budget
 
+class _Tok:
+    """Reference tokenizer (Laya's ModernBERT vocab) via the `tokenizers` library, so no torch/transformers import is needed."""
+    def __init__(self):
+        from tokenizers import Tokenizer
+        from huggingface_hub import snapshot_download
+        import os
+        d = snapshot_download("convaiinnovations/laya", allow_patterns=["tokenizer/*", "typed-decisions/tokenizer/*"])
+        p = os.path.join(d, "typed-decisions", "tokenizer", "tokenizer.json")
+        self.t = Tokenizer.from_file(p if os.path.exists(p) else os.path.join(d, "tokenizer", "tokenizer.json"))
+    def encode(self, text): return self.t.encode(text, add_special_tokens=False).ids
+    def decode(self, ids): return self.t.decode(ids, skip_special_tokens=True)
+
 @functools.lru_cache(maxsize=1)
-def _tok():
-    from transformers import AutoTokenizer
-    from huggingface_hub import snapshot_download
-    import os
-    d = snapshot_download("convaiinnovations/laya", allow_patterns=["tokenizer/*", "typed-decisions/tokenizer/*"])
-    p = os.path.join(d, "typed-decisions", "tokenizer")
-    return AutoTokenizer.from_pretrained(p if os.path.isdir(p) else os.path.join(d, "tokenizer"))
+def _tok(): return _Tok()
 
 def render(state) -> str:
     if isinstance(state, str): return state
@@ -27,7 +33,7 @@ def render(state) -> str:
 
 def cap(text: str, n_tokens: int) -> tuple[str, int, bool]:
     """Return (capped_text, token_count_before, truncated?)."""
-    ids = _tok()(text, add_special_tokens=False)["input_ids"]
+    ids = _tok().encode(text)
     if len(ids) <= n_tokens: return text, len(ids), False
     return _tok().decode(ids[:n_tokens]), len(ids), True
 
