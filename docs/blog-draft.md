@@ -56,7 +56,14 @@ different renderings of the state than the hosted ones. So we froze a protocol:
 
 ## Results
 
-`[table: docs/_fair_table.md, regenerated at the end]`
+| Task | Jev | Haiku 4.5 | Laya (off the shelf) | Laya tuned ×3 | CLM-8B | CLM tuned ×3 |
+|---|---|---|---|---|---|---|
+| Quarantine reason | 100% | 99% | 80% | 100% ±0.6 | 17% | 100% ±0.6 |
+| Curation review | 94% | 97% | 31% | 98% ±0.8 | 19% | 88% ±0.9 |
+| Typosquat 2nd stage | 94% | 94% | 53% | 100% ±0.0 (leaky) | 52% | 100% ±0.0 (leaky) |
+| Finding reachability | 89% | 59% | 43% | 84% ±5.5 | 44% | 76% ±0.8 |
+| License family | 63% | 57% | 23% | 78% ±0.7 | 5% | 58% ±0.6 |
+| Latency p50, single stream, cold | 136 ms | 1,154 ms | 21 ms | 21 ms | 116 ms | 116 ms |
 
 What the table says:
 
@@ -91,7 +98,7 @@ evaluation of the same heads. After chasing a tokenization theory that an A/B te
 embeddings were identical for the same text), the cause turned out to be our export: we stored the prose state as
 a JSON-quoted string, CLM's loader keeps that as literal text, so the heads trained on `"...\n..."` with escaped
 newlines while the server embedded real prose. Same text in, same numbers out. With the export fixed, CLM tuned
-scores `[pending: fixed re-evaluation]`. Its latency is set by the 8B encoder: 56 to 190 ms per fresh capped item
+scores 99.6% on quarantine, 88.3% on curation, 75.5% on reachability and 57.8% on license (three seeds, spread under 1 point), between off-the-shelf and fine-tuned Laya on every honest task. Its latency is set by the 8B encoder: 56 to 190 ms per fresh capped item
 on a 3090, 1 ms on a repeated state from cache. A curation queue almost never repeats a state.
 
 **Context is a real dimension for one task and irrelevant for another.** Laya tuned on reachability:
