@@ -31,7 +31,7 @@ public; no proprietary code or data is used.
 
 ## Results (2026-09-23, test splits, single machine)
 
-Shareable report: https://claude.ai/artifact/J3TzPqXzUGnjLgwbJgZAd9
+Shareable reports: [main benchmark](https://claude.ai/artifact/J3TzPqXzUGnjLgwbJgZAd9) · [phase two, the Laya fine-tune](https://claude.ai/artifact/D6AT7VLuRVBDuQQKSD1Ym1)
 
 Five tasks, 5,561 items, every item assigned train/test by a hash of its id (80/20).
 Fine-tunes see train only; **every number below is on the test split, for every engine**.
