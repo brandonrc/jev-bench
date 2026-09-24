@@ -23,7 +23,7 @@ def decode(answers: dict, qkey: str) -> Answer:
     return Answer(pred=a["choice"], conf=float(a.get("confidence", 0.0)), raw=a)
 
 def load_engine(spec: str):
-    """spec: 'jev' | 'laya:<subfolder or base>[@cuda:N]' | 'laya-http:<url>' | 'claude:<model>'"""
+    """spec: 'jev' | 'laya:<subfolder or base>[@cuda:N]' | 'laya-http:<url>' | 'clm-http:<url>[#model]' | 'claude:<model>'"""
     kind, _, arg = spec.partition(":")
     if kind == "jev":
         from .jev import Jev; return Jev()
@@ -31,6 +31,8 @@ def load_engine(spec: str):
         from .laya import Laya; ck, _, dev = arg.partition("@"); return Laya(ck or "base", dev or "cuda:0")
     if kind == "laya-http":
         from .laya import LayaHTTP; return LayaHTTP(arg or "http://localhost:8000")
+    if kind == "clm-http":
+        from .clm import CLMHTTP; url, _, model = arg.partition("#"); return CLMHTTP(url or "http://localhost:8700", model or "clm-latest")
     if kind == "claude":
         from .claude import Claude; return Claude(arg or "claude-haiku-4-5")
     raise ValueError(spec)

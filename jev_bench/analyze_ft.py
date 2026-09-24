@@ -14,7 +14,7 @@ def main(out="results/summary_test.md"):
     seen = set(); rows = [r for r in rows if not ((r["engine"], r["task"], r["id"]) in seen or seen.add((r["engine"], r["task"], r["id"])))]
     g = collections.defaultdict(list)
     for r in rows: g[(r["task"], r["engine"])].append(r)
-    order = ["jev", "claude-haiku-4-5", "laya-base", "laya-typed-decisions", "laya-ft-all-onehot", "laya-ft-all-distill", "laya-ft-all5-onehot"]
+    order = ["jev", "claude-haiku-4-5", "clm-8b", "clm-ft", "laya-base", "laya-typed-decisions", "laya-ft-all-onehot", "laya-ft-all-distill", "laya-ft-all5-onehot"]
     L = ["| task | engine | n (test) | acc | lenient | macro-F1 | ECE | cov@0.9 | acc@0.9 | p50 ms |", "|---|---|---|---|---|---|---|---|---|---|"]
     summary = []
     for task in ["license", "reachability", "quarantine", "curation", "typosquat"]:
