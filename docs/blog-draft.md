@@ -104,6 +104,32 @@ accuracy on that slice. The one-hot fine-tunes came out under-confident because 
 clamp on 400 calibration items; accuracy at a fixed 80% coverage is still 86 to 100%, but a production
 gate wants a bigger calibration slice or a distillation term.
 
+## What others have found
+
+A survey of independent evaluations published in the week since Jev launched (full notes with links in
+`docs/related-work.md`) puts our results in context:
+
+- On generic, LLM-authored decision tasks (JevBench, 842 items), Jev still ranks first ahead of every open clone,
+  including Laya. Our Laya win is a *fine-tuned* win on *our* tasks, and we say so.
+- Tiny in-domain specialists beating hosted Jev is a pattern, not our discovery: a 706k-parameter form-action model
+  scored 99.7% vs Jev's 83.6% (CUA-S1); a 150M ModernBERT trained on a GTX 1660 Ti edged Laya and Jev on Laya's own
+  suite (openJev-verdict). The academic version predates all of these: RoBERTa/DeBERTa with 200 examples beating
+  GPT-4 and Claude Opus zero-shot (Bucher and Martini, 2024).
+- Haiku beating Jev on holistic questions and Jev winning once the question is decomposed into atomic ones (Beri,
+  phishing: 62.6% vs 81.3% single-question, 95.0% vs 93.2% decomposed) matches our tie on curation and typosquat.
+  Our reachability gap (89% vs 59%) is larger than anyone else reports; it is a rule-following task, which is the
+  shape decomposition produces.
+- Jev's raw probabilities carry about 0.1 calibration error and improve sharply with post-hoc recalibration
+  (hn-oracle: 0.105 to 0.017 with isotonic scaling). Ours were 0.005 to 0.13 by task.
+- An independent black-box study (Hume) found the same single-pass joint scoring we did, plus option-order
+  sensitivity. We checked: reversing option order flipped 0 of 60 quarantine answers, 2 of 60 curation, 4 of 60
+  license, with mean probability shifts of 0.002 to 0.05. Milder on our rubrics than reported.
+- CLM-8B has never been evaluated on zero-shot text classification by anyone; every published number is action
+  scoring over agent trajectories. Our at-chance result is the first such measurement, and it is the wrong task
+  for its architecture rather than a flaw in it.
+- Nobody has published a decision model or a fine-tuned encoder for package-registry curation. Vendors use classical
+  ML for typosquat and metadata (ConfuGuard, in production at Socket) and LLMs for code review (SocketAI).
+
 ## What we didn't test
 
 - **Our own queue.** Everything here is public or synthetic. Two of the five tasks are synthetic enough that
