@@ -13,7 +13,10 @@ def rows_for(task, split, cap=None):
         label = it.label
         if isinstance(label, bool): label = "true" if label else "false"
         st = prepare_state(task, it.state, cap)[0] if cap else it.state
-        out.append({"id": it.id, "workflow": task, "state": json.dumps(st), "questions": json.dumps(q),
+        # A dict state is stored as JSON (CLM's loader parses it back). A prose string must be stored RAW:
+        # json.dumps would keep the quotes and \n escapes as literal text, and the head would train on a
+        # different string than the server embeds at inference (found the hard way: 15-point served gap).
+        out.append({"id": it.id, "workflow": task, "state": st if isinstance(st, str) else json.dumps(st), "questions": json.dumps(q),
                     "gold": json.dumps({qk: {"label": label}})})
     return out
 
