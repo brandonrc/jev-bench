@@ -30,82 +30,67 @@ public; no proprietary code or data is used.
 | Scanner finding reachability in declared dep graph | noul | real OSV advisories in synthetic graphs, label by graph walk |
 | Quarantine reason | choice | templated scanner output, 7 reasons, 20% with distractors |
 
-## Results (2026-09-23, test splits, single machine)
+## Results (fair protocol, 2026-09-24)
 
-Shareable reports: [main benchmark](https://claude.ai/artifact/J3TzPqXzUGnjLgwbJgZAd9) · [phase two, the Laya fine-tune](https://claude.ai/artifact/D6AT7VLuRVBDuQQKSD1Ym1)
+Shareable reports: [main benchmark](https://claude.ai/artifact/J3TzPqXzUGnjLgwbJgZAd9) · [Laya fine-tune](https://claude.ai/artifact/D6AT7VLuRVBDuQQKSD1Ym1)
+Write-ups: `docs/blog-phase1.md` (first person), `docs/blog-draft.md` (technical), `docs/related-work.md` (survey).
 
-Five tasks, 5,561 items, every item assigned train/test by a hash of its id (80/20).
-Fine-tunes see train only; **every number below is on the test split, for every engine**.
+Every engine gets the same 768-token capped prose state (`--state-cap 768`), every number is on the held-out test
+split, fine-tunes are three seeds, latency is single-stream cold in a fresh process. Typosquat fine-tuned cells are
+template leakage and excluded from claims.
 
-| task | engine | n (test) | acc | lenient | macro-F1 | ECE | cov@0.9 | acc@0.9 | p50 ms |
-|---|---|---|---|---|---|---|---|---|---|
-| license | jev | 423 | 0.641 | 0.778 | 0.633 | 0.132 | 0.41 | 0.860 | 199 |
-| license | claude-haiku-4-5 | 423 | 0.586 | 0.728 | 0.566 | 0.233 | 0.34 | 0.755 | 825 |
-| license | clm-8b | 419 | 0.074 | 0.239 | 0.065 | 0.601 | 0.13 | 0.071 | 461 |
-| license | clm-ft | 417 | 0.463 | 0.547 | 0.408 | 0.123 | 0.05 | 0.250 | 457 |
-| license | laya-base | 423 | 0.300 | 0.437 | 0.246 | 0.181 | 0.00 | 1.000 | 20 |
-| license | laya-typed-decisions | 423 | 0.187 | 0.255 | 0.173 | 0.098 | 0.00 | nan | 28 |
-| license | laya-ft-all-onehot | 423 | 0.792 | 0.839 | 0.785 | 0.114 | 0.08 | 1.000 | 30 |
-| license | laya-ft-all-distill | 423 | 0.570 | 0.721 | 0.534 | 0.050 | 0.09 | 0.917 | 31 |
-| license | laya-ft-all5-onehot | 423 | 0.775 | 0.818 | 0.756 | 0.124 | 0.41 | 0.954 | 30 |
-| reachability | jev | 98 | 0.888 | - | 0.880 | 0.047 | 0.87 | 0.894 | 193 |
-| reachability | claude-haiku-4-5 | 98 | 0.643 | - | 0.632 | 0.318 | 0.95 | 0.634 | 989 |
-| reachability | clm-8b | 96 | 0.479 | - | 0.382 | 0.451 | 0.79 | 0.526 | 647 |
-| reachability | clm-ft | 93 | 0.699 | - | 0.696 | 0.094 | 0.16 | 1.000 | 1676 |
-| reachability | laya-base | 98 | 0.429 | - | 0.300 | 0.283 | 0.00 | nan | 20 |
-| reachability | laya-typed-decisions | 98 | 0.429 | - | 0.300 | 0.221 | 0.00 | nan | 32 |
-| reachability | laya-ft-all-onehot | 98 | 0.888 | - | 0.885 | 0.095 | 0.79 | 0.896 | 22 |
-| reachability | laya-ft-all-distill | 98 | 0.816 | - | 0.807 | 0.118 | 0.38 | 1.000 | 22 |
-| reachability | laya-ft-all5-onehot | 98 | 0.827 | - | 0.821 | 0.067 | 0.63 | 0.952 | 22 |
-| quarantine | jev | 82 | 1.000 | - | 1.000 | 0.004 | 0.99 | 1.000 | 171 |
-| quarantine | claude-haiku-4-5 | 82 | 0.988 | - | 0.988 | 0.037 | 1.00 | 0.988 | 796 |
-| quarantine | clm-8b | 82 | 0.195 | - | 0.127 | 0.367 | 0.00 | nan | 612 |
-| quarantine | clm-ft | 82 | 0.988 | - | 0.988 | 0.078 | 0.70 | 1.000 | 53 |
-| quarantine | laya-base | 82 | 0.793 | - | 0.796 | 0.508 | 0.00 | nan | 18 |
-| quarantine | laya-typed-decisions | 82 | 0.817 | - | 0.807 | 0.746 | 0.00 | nan | 19 |
-| quarantine | laya-ft-all-onehot | 82 | 0.988 | - | 0.988 | 0.075 | 0.94 | 1.000 | 20 |
-| quarantine | laya-ft-all-distill | 82 | 1.000 | - | 1.000 | 0.031 | 0.91 | 1.000 | 21 |
-| quarantine | laya-ft-all5-onehot | 82 | 0.988 | - | 0.988 | 0.035 | 0.95 | 1.000 | 20 |
-| curation | jev | 240 | 0.942 | - | 0.941 | 0.035 | 0.80 | 0.990 | 162 |
-| curation | claude-haiku-4-5 | 240 | 0.975 | - | 0.975 | 0.049 | 0.83 | 0.995 | 806 |
-| curation | clm-8b | 240 | 0.254 | - | 0.194 | 0.201 | 0.00 | 0.000 | 404 |
-| curation | clm-ft | 240 | 0.900 | - | 0.895 | 0.098 | 0.46 | 1.000 | 403 |
-| curation | laya-base | 240 | 0.279 | - | 0.198 | 0.091 | 0.00 | nan | 18 |
-| curation | laya-typed-decisions | 240 | 0.317 | - | 0.237 | 0.256 | 0.00 | nan | 18 |
-| curation | laya-ft-all-onehot | 240 | 0.979 | - | 0.978 | 0.053 | 0.95 | 0.987 | 19 |
-| curation | laya-ft-all-distill | 240 | 0.938 | - | 0.936 | 0.085 | 0.63 | 1.000 | 19 |
-| curation | laya-ft-all5-onehot | 240 | 0.992 | - | 0.991 | 0.015 | 0.98 | 0.992 | 19 |
-| typosquat | jev | 248 | 0.952 | - | 0.951 | 0.114 | 0.51 | 1.000 | 188 |
-| typosquat | claude-haiku-4-5 | 248 | 0.935 | - | 0.935 | 0.099 | 0.71 | 0.994 | 734 |
-| typosquat | clm-8b | 248 | 0.512 | - | 0.395 | 0.251 | 0.11 | 0.821 | 365 |
-| typosquat | clm-ft | 248 | 1.000 | - | 1.000 | 0.023 | 0.95 | 1.000 | 372 |
-| typosquat | laya-base | 248 | 0.472 | - | 0.394 | 0.142 | 0.00 | nan | 16 |
-| typosquat | laya-typed-decisions | 248 | 0.516 | - | 0.348 | 0.055 | 0.00 | nan | 15 |
-| typosquat | laya-ft-all5-onehot | 248 | 1.000 | - | 1.000 | 0.001 | 1.00 | 1.000 | 16 |
+| Task | Jev | Haiku 4.5 | Laya (off the shelf) | Laya tuned ×3 | CLM-8B | CLM tuned ×3 |
+|---|---|---|---|---|---|---|
+| Quarantine reason | 100% | 99% | 80% | 100% ±0.6 | 17% | 100% ±0.6 |
+| Curation review | 94% | 97% | 31% | 98% ±0.8 | 19% | 88% ±0.9 |
+| Typosquat 2nd stage | 94% | 94% | 53% | 100% ±0.0 (leaky) | 52% | 100% ±0.0 (leaky) |
+| Finding reachability | 89% | 59% | 43% | 84% ±5.5 | 44% | 76% ±0.8 |
+| License family | 63% | 57% | 23% | 78% ±0.7 | 5% | 58% ±0.6 |
+| Latency p50, single stream, cold | 136 ms | 1154 ms | 21 ms | 21 ms | 116 ms | – |
 
-Highlights:
+Full table with intervals, macro-F1, ECE and accuracy at 80% coverage (`results/fair/summary.md`):
 
-- **An 18-minute fine-tune put local Laya level with Jev on every task at a tenth of the latency** (all5-onehot):
-  license 0.78 vs 0.64, reachability 0.83 vs 0.89 (0.89 in the four-task run; n=98), quarantine 0.99 vs 1.00, curation 0.99 vs 0.94,
-  at 19 to 30 ms vs 160 to 200 ms. Zero-shot Laya was at chance. Recipe in `jev_bench/finetune/README.md`.
-- **Typosquat 100% for the fine-tune is template leakage, not skill**: positives' README/publisher are synthesized
-  (the malicious packages are gone from the registries) and the model learned the template. Jev 0.95 / Haiku 0.94 are
-  the meaningful numbers there; both drop to the 60s on the 180 hard items.
-- **Distilling from Jev** (soft targets from its probabilities) calibrates better but learns Jev's mistakes:
-  license 0.57. Use one-hot labels for accuracy.
-- **Rubric wording moved Jev 0.80 -> 0.95 on curation** (stating the 4-year abandoned rule);
-  the v1 run is kept under `results/ablations/`.
-- **Jev scales out**: per-call latency flat to 16 concurrent streams, 150 decisions/s at 64 (`results/speed.jsonl`).
-- **Jev's one blind spot**: 0/50 on reachability items where the vulnerable package is under both a dev and a prod path.
-- **CLM-8B** (Contrastive-LM, frozen Qwen3-8B + 20M head): at or below chance zero-shot; a 12-minute head fine-tune
-  reaches quarantine 0.99, curation 0.90, reachability 0.70, license 0.46, behind the fully fine-tuned Laya on three tasks.
-  60 to 320 ms per fresh item single-stream on a 3090 (1 ms on a cached repeat); long license texts time out under load.
-- **Haiku 4.5** ties Jev on quarantine, curation and typosquat, loses on reachability (0.64), at ~5x the latency.
-- **License accuracy is capped by taxonomy**: ScanCode's categories disagree with the rubric on a few
-  boundaries; the fine-tuned model learns them, hosted models can't. Lenient scoring is reported alongside.
+| task | engine | n | runs | acc | 95% CI | lenient | macro-F1 | ECE | acc@80%cov | p50 ms | truncated |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| quarantine | claude-haiku-4-5 | 82 | 1 | 0.988 | 0.95–1.00 | - | 0.988 | 0.043 | 0.985 | 1213 | 0% |
+| quarantine | clm-8b | 82 | 1 | 0.171 | 0.10–0.26 | - | 0.085 | 0.461 | 0.200 | 2 | 0% |
+| quarantine | clm-ft | 82 | 3 | 0.996 ±0.006 | 0.96–1.00 | - | 0.996 | 0.077 | 1.000 | 51 | 0% |
+| quarantine | jev | 82 | 1 | 1.000 | 1.00–1.00 | - | 1.000 | 0.005 | 1.000 | 155 | 0% |
+| quarantine | laya-base | 82 | 1 | 0.768 | 0.67–0.87 | - | 0.778 | 0.532 | 0.785 | 19 | 0% |
+| quarantine | laya-ft | 82 | 3 | 0.996 ±0.006 | 0.96–1.00 | - | 0.996 | 0.061 | 1.000 | 20 | 0% |
+| quarantine | laya-typed-decisions | 82 | 1 | 0.805 | 0.72–0.89 | - | 0.794 | 0.742 | 0.846 | 19 | 0% |
+| curation | claude-haiku-4-5 | 240 | 1 | 0.967 | 0.94–0.99 | - | 0.968 | 0.043 | 1.000 | 1177 | 0% |
+| curation | clm-8b | 240 | 1 | 0.188 | 0.14–0.24 | - | 0.104 | 0.432 | 0.193 | 4 | 0% |
+| curation | clm-ft | 240 | 3 | 0.883 ±0.009 | 0.85–0.93 | - | 0.877 | 0.102 | 0.953 | 245 | 0% |
+| curation | jev | 240 | 1 | 0.942 | 0.91–0.97 | - | 0.941 | 0.037 | 0.990 | 141 | 0% |
+| curation | laya-base | 240 | 1 | 0.292 | 0.23–0.35 | - | 0.195 | 0.113 | 0.339 | 17 | 0% |
+| curation | laya-ft | 240 | 3 | 0.981 ±0.008 | 0.95–0.99 | - | 0.979 | 0.046 | 0.998 | 17 | 0% |
+| curation | laya-typed-decisions | 240 | 1 | 0.312 | 0.25–0.38 | - | 0.238 | 0.249 | 0.328 | 18 | 0% |
+| typosquat | claude-haiku-4-5 | 248 | 1 | 0.935 | 0.90–0.96 | - | 0.935 | 0.083 | 0.980 | 1199 | 0% |
+| typosquat | clm-8b | 248 | 1 | 0.516 | 0.45–0.58 | - | 0.403 | 0.260 | 0.571 | 4 | 0% |
+| typosquat | clm-ft | 248 | 3 | 1.000 ±0.000 | 1.00–1.00 | - | 1.000 | 0.027 | 1.000 | 221 | 0% |
+| typosquat | jev | 248 | 1 | 0.944 | 0.92–0.97 | - | 0.943 | 0.103 | 1.000 | 138 | 0% |
+| typosquat | laya-base | 248 | 1 | 0.375 | 0.31–0.44 | - | 0.308 | 0.252 | 0.379 | 17 | 0% |
+| typosquat | laya-ft | 248 | 3 | 1.000 ±0.000 | 1.00–1.00 | - | 1.000 | 0.003 | 1.000 | 16 | 0% |
+| typosquat | laya-typed-decisions | 248 | 1 | 0.528 | 0.47–0.59 | - | 0.387 | 0.033 | 0.535 | 16 | 0% |
+| reachability | claude-haiku-4-5 | 98 | 1 | 0.592 | 0.49–0.69 | - | 0.566 | 0.373 | 0.577 | 1245 | 10% |
+| reachability | clm-8b | 98 | 1 | 0.439 | 0.35–0.54 | - | 0.320 | 0.366 | 0.462 | 4 | 10% |
+| reachability | clm-ft | 98 | 3 | 0.755 ±0.008 | 0.68–0.85 | - | 0.747 | 0.035 | 0.804 | 452 | 10% |
+| reachability | jev | 98 | 1 | 0.888 | 0.83–0.95 | - | 0.880 | 0.075 | 0.962 | 145 | 10% |
+| reachability | laya-base | 98 | 1 | 0.429 | 0.34–0.53 | - | 0.300 | 0.265 | 0.423 | 19 | 10% |
+| reachability | laya-ft | 98 | 3 | 0.844 ±0.055 | 0.68–0.85 | - | 0.838 | 0.063 | 0.902 | 23 | 10% |
+| reachability | laya-typed-decisions | 98 | 1 | 0.429 | 0.34–0.53 | - | 0.300 | 0.230 | 0.513 | 20 | 10% |
+| license | claude-haiku-4-5 | 423 | 1 | 0.574 | 0.52–0.62 | 0.697 | 0.565 | 0.238 | 0.642 | 1141 | 45% |
+| license | clm-8b | 423 | 1 | 0.052 | 0.03–0.07 | 0.222 | 0.029 | 0.687 | 0.044 | 8 | 45% |
+| license | clm-ft | 423 | 3 | 0.578 ±0.006 | 0.52–0.62 | 0.650 | 0.562 | 0.085 | 0.625 | 466 | 45% |
+| license | jev | 423 | 1 | 0.626 | 0.58–0.67 | 0.764 | 0.629 | 0.114 | 0.686 | 153 | 45% |
+| license | laya-base | 423 | 1 | 0.281 | 0.24–0.32 | 0.402 | 0.249 | 0.137 | 0.322 | 20 | 45% |
+| license | laya-ft | 423 | 3 | 0.781 ±0.007 | 0.75–0.83 | 0.815 | 0.754 | 0.118 | 0.863 | 30 | 45% |
+| license | laya-typed-decisions | 423 | 1 | 0.229 | 0.19–0.27 | 0.300 | 0.164 | 0.138 | 0.234 | 26 | 45% |
 
-Full-set (non-split) numbers are in `results/summary.md`; per-item rows in `results/raw/` (hosted and zero-shot),
-`results/raw-ft/` (fine-tuned, test split), `results/distill/` (Jev with full probabilities).
+Context sweep (Laya retrained per cap, `results/fair/context/`): reachability 62 / 81 / 91 / 86 / 80% and license
+78 / 84 / 79 / 82 / 78% at 256 / 512 / 768 / 1,536 / 2,048 tokens. Jev probes: `results/jev_probe.jsonl`.
+Earlier uncapped runs remain under `results/raw/`, `results/raw-ft/` and `results/summary_test.md`.
 
 ## Running
 
