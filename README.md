@@ -11,6 +11,7 @@ thousands of times a day where a wrong answer costs a queue reorder, not a breac
 | [TypeSafe Jev](https://typesafe.ai) (`jev-latest`) | Hosted non-generative decision model; `choice` / `noul` / `score` primitives with calibrated probabilities | `api.typesafe.ai` |
 | [Laya](https://github.com/NandhaKishorM/laya) | Apache-2.0 clone of the same API; ModernBERT-large, 421M params | local GPU (RTX 3090) |
 | Claude Haiku 4.5 | Generative LLM forced into the same output shape via structured outputs | Anthropic API |
+| Laya, fine-tuned | Same model after 4 epochs on the train splits (`jev_bench/finetune/`) | local GPU |
 
 The three engines get identical state and identical rubrics. Claude answers are
 parsed into `{label, confidence}` so every metric is computed the same way.
@@ -23,59 +24,65 @@ public; no proprietary code or data is used.
 | Task | Primitive | Ground truth |
 |---|---|---|
 | License family for non-SPDX LICENSE blobs | choice over 8 families | real SPDX texts, perturbed (rebranded / truncated) |
-| Typosquat second stage: deliberate impersonation? | noul | real squat pairs vs real legit affixed packages |
-| Curation review: malicious / abandoned / license-incompatible / benign | choice | templated from real package metadata |
-| Scanner finding reachability in declared dep graph | noul | graph walk computed in code *(planned)* |
-| Quarantine reason | choice | templated scanner output *(planned)* |
+| Typosquat second stage: deliberate impersonation? | noul | 600 OSV malicious names vs 615 real live near-name packages |
+| Curation review: malicious / abandoned / license-incompatible / benign | choice | real npm/PyPI metadata; malicious rows from 300 OSV advisories |
+| Scanner finding reachability in declared dep graph | noul | real OSV advisories in synthetic graphs, label by graph walk |
+| Quarantine reason | choice | templated scanner output, 7 reasons, 20% with distractors |
 
-## Results (2026-09-23, 1,677 items, single machine)
+## Results (2026-09-23, test splits, single machine)
 
 Shareable report: https://claude.ai/artifact/J3TzPqXzUGnjLgwbJgZAd9
 
-| task | engine | n | acc | lenient | macro-F1 | ECE | cov@0.9 | acc@0.9 | p50 ms | p95 ms | p99 ms | items/s | c |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| license | claude-haiku-4-5 | 807 | 0.646 | 0.773 | 0.649 | 0.192 | 0.42 | 0.871 | 900 | 1347 | 1767 | 8.2 | 8 |
-| license | jev | 807 | 0.644 | 0.777 | 0.662 | 0.139 | 0.48 | 0.841 | 185 | 265 | 337 | 20.7 | 4 |
-| license | laya-base | 807 | 0.271 | 0.428 | 0.221 | 0.145 | 0.00 | 1.000 | 20 | 26 | 28 | 48.3 | 1 |
-| license | laya-typed-decisions | 807 | 0.206 | 0.315 | 0.167 | 0.117 | 0.00 | nan | 24 | 38 | 41 | 35.8 | 1 |
-| quarantine | claude-haiku-4-5 | 420 | 0.974 | - | 0.974 | 0.030 | 0.99 | 0.981 | 817 | 1298 | 2531 | 8.4 | 8 |
-| quarantine | jev | 420 | 1.000 | - | 1.000 | 0.012 | 0.95 | 1.000 | 171 | 247 | 306 | 22.3 | 4 |
-| quarantine | laya-base | 420 | 0.740 | - | 0.752 | 0.417 | 0.00 | 1.000 | 18 | 19 | 19 | 55.4 | 1 |
-| quarantine | laya-typed-decisions | 420 | 0.748 | - | 0.736 | 0.672 | 0.00 | nan | 19 | 24 | 25 | 46.7 | 1 |
-| reachability | claude-haiku-4-5 | 450 | 0.620 | - | 0.605 | 0.343 | 0.97 | 0.612 | 959 | 1448 | 2118 | 7.6 | 8 |
-| reachability | jev | 450 | 0.889 | - | 0.883 | 0.045 | 0.86 | 0.906 | 187 | 250 | 325 | 20.8 | 4 |
-| reachability | laya-base | 450 | 0.449 | - | 0.317 | 0.259 | 0.00 | nan | 20 | 21 | 22 | 49.4 | 1 |
-| reachability | laya-typed-decisions | 450 | 0.444 | - | 0.308 | 0.202 | 0.00 | nan | 32 | 34 | 35 | 31.8 | 1 |
+Five tasks, 5,561 items, every item assigned train/test by a hash of its id (80/20).
+Fine-tunes see train only; **every number below is on the test split, for every engine**.
 
-Per-item rows are in `results/raw/`. Typosquat and curation runs are pending.
+| task | engine | n (test) | acc | lenient | macro-F1 | ECE | cov@0.9 | acc@0.9 | p50 ms |
+|---|---|---|---|---|---|---|---|---|---|
+| license | jev | 423 | 0.641 | 0.778 | 0.633 | 0.132 | 0.41 | 0.860 | 199 |
+| license | claude-haiku-4-5 | 423 | 0.586 | 0.728 | 0.566 | 0.233 | 0.34 | 0.755 | 825 |
+| license | laya-base | 423 | 0.300 | 0.437 | 0.246 | 0.181 | 0.00 | 1.000 | 20 |
+| license | laya-typed-decisions | 423 | 0.187 | 0.255 | 0.173 | 0.098 | 0.00 | nan | 28 |
+| license | laya-ft-all-onehot | 423 | 0.792 | 0.839 | 0.785 | 0.114 | 0.08 | 1.000 | 30 |
+| license | laya-ft-all-distill | 423 | 0.570 | 0.721 | 0.534 | 0.050 | 0.09 | 0.917 | 31 |
+| reachability | jev | 98 | 0.888 | - | 0.880 | 0.047 | 0.87 | 0.894 | 193 |
+| reachability | claude-haiku-4-5 | 98 | 0.643 | - | 0.632 | 0.318 | 0.95 | 0.634 | 989 |
+| reachability | laya-base | 98 | 0.429 | - | 0.300 | 0.283 | 0.00 | nan | 20 |
+| reachability | laya-typed-decisions | 98 | 0.429 | - | 0.300 | 0.221 | 0.00 | nan | 32 |
+| reachability | laya-ft-all-onehot | 98 | 0.888 | - | 0.885 | 0.095 | 0.79 | 0.896 | 22 |
+| reachability | laya-ft-all-distill | 98 | 0.816 | - | 0.807 | 0.118 | 0.38 | 1.000 | 22 |
+| quarantine | jev | 82 | 1.000 | - | 1.000 | 0.004 | 0.99 | 1.000 | 171 |
+| quarantine | claude-haiku-4-5 | 82 | 0.988 | - | 0.988 | 0.037 | 1.00 | 0.988 | 796 |
+| quarantine | laya-base | 82 | 0.793 | - | 0.796 | 0.508 | 0.00 | nan | 18 |
+| quarantine | laya-typed-decisions | 82 | 0.817 | - | 0.807 | 0.746 | 0.00 | nan | 19 |
+| quarantine | laya-ft-all-onehot | 82 | 0.988 | - | 0.988 | 0.075 | 0.94 | 1.000 | 20 |
+| quarantine | laya-ft-all-distill | 82 | 1.000 | - | 1.000 | 0.031 | 0.91 | 1.000 | 21 |
+| curation | jev | 240 | 0.942 | - | 0.941 | 0.035 | 0.80 | 0.990 | 162 |
+| curation | claude-haiku-4-5 | 240 | 0.975 | - | 0.975 | 0.049 | 0.83 | 0.995 | 806 |
+| curation | laya-base | 240 | 0.279 | - | 0.198 | 0.091 | 0.00 | nan | 18 |
+| curation | laya-typed-decisions | 240 | 0.317 | - | 0.237 | 0.256 | 0.00 | nan | 18 |
+| curation | laya-ft-all-onehot | 240 | 0.979 | - | 0.978 | 0.053 | 0.95 | 0.987 | 19 |
+| curation | laya-ft-all-distill | 240 | 0.938 | - | 0.936 | 0.085 | 0.63 | 1.000 | 19 |
+| typosquat | jev | 248 | 0.952 | - | 0.951 | 0.114 | 0.51 | 1.000 | 188 |
+| typosquat | claude-haiku-4-5 | 248 | 0.935 | - | 0.935 | 0.099 | 0.71 | 0.994 | 734 |
+| typosquat | laya-typed-decisions | 248 | 0.516 | - | 0.348 | 0.055 | 0.00 | nan | 15 |
 
-## Pilot results (2026-09-23, 166 items, single machine)
+Highlights:
 
-| task | engine | n | acc | p50 ms | p95 ms | mean conf (right) | mean conf (wrong) |
-|---|---|---|---|---|---|---|---|
-| license | jev | 90 | 0.89 | 243 | 362 | 0.97 | 0.58 |
-| license | laya-typed | 90 | 0.30 | 21 | 40 | 0.13 | 0.09 |
-| license | laya-base | 90 | 0.43 | 20 | 27 | 0.17 | 0.12 |
-| typosquat | jev | 36 | 0.97 | 222 | 319 | 0.90 | 0.71 |
-| typosquat | laya-typed | 36 | 0.50 | 16 | 17 | 0.58 | 0.57 |
-| typosquat | laya-base | 36 | 0.56 | 17 | 17 | 0.58 | 0.55 |
-| curation | jev | 40 | 1.00 | 255 | 348 | 1.00 | - |
-| curation | laya-typed | 40 | 0.45 | 16 | 18 | 0.12 | 0.12 |
-| curation | laya-base | 40 | 0.50 | 17 | 18 | 0.30 | 0.28 |
+- **A 15-minute fine-tune put local Laya level with Jev on every task at a tenth of the latency**:
+  license 0.79 vs 0.64, reachability 0.89 vs 0.89, quarantine 0.99 vs 1.00, curation 0.98 vs 0.94,
+  at 19 to 30 ms vs 160 to 200 ms. Zero-shot Laya was at chance. Recipe in `jev_bench/finetune/README.md`.
+- **Distilling from Jev** (soft targets from its probabilities) calibrates better but learns Jev's mistakes:
+  license 0.57. Use one-hot labels for accuracy.
+- **Rubric wording moved Jev 0.80 -> 0.95 on curation** (stating the 4-year abandoned rule);
+  the v1 run is kept under `results/ablations/`.
+- **Jev scales out**: per-call latency flat to 16 concurrent streams, 150 decisions/s at 64 (`results/speed.jsonl`).
+- **Jev's one blind spot**: 0/50 on reachability items where the vulnerable package is under both a dev and a prod path.
+- **Haiku 4.5** ties Jev on quarantine, curation and typosquat, loses on reachability (0.64), at ~5x the latency.
+- **License accuracy is capped by taxonomy**: ScanCode's categories disagree with the rubric on a few
+  boundaries; the fine-tuned model learns them, hosted models can't. Lenient scoring is reported alongside.
 
-Jev latency is over the public internet from a home connection with a
-keep-alive HTTP client; Laya latency is in-process on one RTX 3090.
-
-Notes so far:
-
-- Jev's license misses are all arguable classifications (Artistic-2.0, OFL-1.1,
-  EUPL-1.2, Sleepycat) and all came back with confidence 0.3 to 0.7, versus
-  0.97 mean confidence on hits. The confidence signal is usable for gating.
-- Laya zero-shot is at chance on these tasks, which its own README warns about
-  ("near chance on typed-decisions zero-shot"). It is 12 to 15x faster than Jev
-  from here. A fine-tune on task data is the fair comparison and is planned.
-- Laya context is 512 tokens (base) or 1024 (typed-decisions); a full GPL text
-  is ~8.7k tokens and gets truncated silently.
+Full-set (non-split) numbers are in `results/summary.md`; per-item rows in `results/raw/` (hosted and zero-shot),
+`results/raw-ft/` (fine-tuned, test split), `results/distill/` (Jev with full probabilities).
 
 ## Running
 
