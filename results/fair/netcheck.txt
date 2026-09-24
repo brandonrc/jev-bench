@@ -1,0 +1,2 @@
+api.typesafe.ai      tcp p50=72ms  tls p50=145ms
+api.anthropic.com    tcp p50=12ms  tls p50=27ms
