@@ -63,7 +63,7 @@ different renderings of the state than the hosted ones. So we froze a protocol:
 | Typosquat 2nd stage | 94% | 94% | 53% | 100% ±0.0 (leaky) | 52% | 100% ±0.0 (leaky) |
 | Finding reachability | 89% | 59% | 43% | 84% ±5.5 | 44% | 76% ±0.8 |
 | License family | 63% | 57% | 23% | 78% ±0.7 | 5% | 58% ±0.6 |
-| Latency p50, single stream, cold | 136 ms | 1,154 ms | 21 ms | 21 ms | 116 ms | 116 ms |
+| Latency p50, single stream, cold | 136 ms | 1,154 ms | 21 ms | 21 ms | 116 ms | 102 ms |
 
 What the table says:
 

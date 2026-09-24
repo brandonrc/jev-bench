@@ -104,7 +104,7 @@ He was right.
 | Typosquat 2nd stage | 94% | 94% | 53% | 100% ±0.0 (leaky) | 52% | 100% ±0.0 (leaky) |
 | Finding reachability | 89% | 59% | 43% | 84% ±5.5 | 44% | 76% ±0.8 |
 | License family | 63% | 57% | 23% | 78% ±0.7 | 5% | 58% ±0.6 |
-| Latency p50, single stream, cold | 136 ms | 1,154 ms | 21 ms | 21 ms | 116 ms | 116 ms |
+| Latency p50, single stream, cold | 136 ms | 1,154 ms | 21 ms | 21 ms | 116 ms | 102 ms |
 
 Accuracy on held-out test splits with 768-token capped inputs. Fine-tuned columns are the mean of three seeds with the spread. Latency is the median across tasks; hosted engines include the network from my desk. Typosquat cells marked leaky are excluded from every claim.
 
@@ -144,7 +144,7 @@ Laya, at about 25x Jev's price per token.
 
 **CLM is built for a different problem.** It embeds each answer option on its own and picks the nearest. That's
 great when one screen gets scored against fifty possible actions, which is what its authors built it for, and it
-doesn't work for "which of these seven quarantine reasons". After a head fine-tune on the same labels it reached 100% on quarantine, 88% on curation, 76% on reachability and 58% on license, so it sits between off-the-shelf Laya and fine-tuned Laya, and it pays 50 to 450 ms per fresh item because every input goes through an 8-billion-parameter encoder. Its 1 ms answers only happen on inputs it has seen before, which a curation queue rarely produces. I also cost myself half a day:
+doesn't work for "which of these seven quarantine reasons". After a head fine-tune on the same labels it reached 100% on quarantine, 88% on curation, 76% on reachability and 58% on license, so it sits between off-the-shelf Laya and fine-tuned Laya, and it pays 57 to 118 ms per fresh capped item because every input goes through an 8-billion-parameter encoder. Its 1 ms answers only happen on inputs it has seen before, which a curation queue rarely produces. I also cost myself half a day:
 my export stored the input as a JSON-quoted string, its loader kept that as literal text, and the model trained on
 `"...\n..."` while the server saw real newlines. Same text, same numbers. I'm writing it down because you'll hit a
 version of it.
