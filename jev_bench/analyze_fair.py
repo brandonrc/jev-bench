@@ -28,6 +28,7 @@ def load(dirs):
 def main(out="results/fair/summary.md", *dirs):
     dirs = dirs or ("results/fair/raw",)
     rows = load(dirs)
+    seen = set(); rows = [r for r in rows if not ((r["engine"], r["task"], r.get("run", 0), r["id"]) in seen or seen.add((r["engine"], r["task"], r.get("run", 0), r["id"])))]  # dedupe
     g = collections.defaultdict(lambda: collections.defaultdict(list))   # (task, engine) -> run -> rows
     for r in rows: g[(r["task"], r["engine"])][r.get("run", 0)].append(r)
     tasks = ["quarantine", "curation", "typosquat", "reachability", "license"]
