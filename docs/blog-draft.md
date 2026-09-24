@@ -1,0 +1,133 @@
+# We benchmarked four "decision models" on package-curation triage. A 421M model you can fine-tune in 18 minutes beat the hosted one.
+
+*Draft. Numbers marked `[pending]` are being filled from the last two runs.*
+
+## Why
+
+A package registry's curation pipeline asks the same bounded questions thousands of times a day. Is this
+package a deliberate impersonation of a popular one? Which license family is this free-text LICENSE? Does this
+scanner finding actually reach the declared dependency graph? Why was this artifact quarantined? These are
+not generation tasks. They are typed decisions with a small answer space, and the queue that holds them is
+human labour. A model that ranks that queue well is pure upside; a wrong answer costs a reorder, not a breach.
+
+In September 2026 a new class of model appeared for exactly this shape of problem. TypeSafe's hosted **Jev**
+answers `choice`, `noul` (yes/no) and `score` questions about a state with calibrated probabilities and no
+text generation. Within a week, two open alternatives followed: **Laya** (ModernBERT-large, 421M parameters,
+Apache 2.0) and Stanford's **CLM-8B** (a frozen Qwen3-8B encoder with a 20M-parameter trained head). All
+three speak the same wire format. We wanted to know which one, if any, belongs in our pipeline, and what
+happens when its accuracy isn't good enough.
+
+## What we measured
+
+Five tasks modelled on real hot spots in a curation service, 5,561 items, all public or synthetic data:
+
+| Task | Primitive | Where the data comes from |
+|---|---|---|
+| Quarantine reason | choice, 7 options | templates modelled on ClamAV, Trivy, Grype, ScanCode, OPA, cosign output; 20% carry a distractor |
+| Curation review | choice, 4 options | real npm and PyPI metadata; malicious rows from 300 OSV advisories |
+| Typosquat second stage | noul | 600 OSV malicious names vs 615 real live near-name packages |
+| Finding reachability | noul | real OSV advisories planted in synthetic dependency trees, label by graph walk |
+| License family | choice, 8 options | 2,271 real license texts from ScanCode, verbatim, rebranded and truncated |
+
+Seven columns: Jev, Claude Haiku 4.5 as the generative reference, Laya off the shelf (two checkpoints),
+Laya fine-tuned, CLM-8B off the shelf, CLM fine-tuned.
+
+## The rules, because they decide the result
+
+Early on we noticed that the comparison was riding on incidental differences: Laya reads 512 or 1,024 tokens,
+CLM 2,048, Jev 32k; CLM caches embeddings so repeated states answer in 1 ms; fine-tuned models saw
+different renderings of the state than the hosted ones. So we froze a protocol:
+
+1. **Identical bytes.** Every state is rendered to the same `key: value` prose and cut to 768 reference
+   tokens (Laya's tokenizer), leaving 256 for the question, so the total fits a 1,024 budget every model can
+   read whole. Reachability trees are pruned to the paths that reach the finding's package, for everyone.
+2. **Test only.** Every item is assigned train or test by a hash of its id, 80/20. Fine-tunes see train only.
+   Every number below is test-split only, for every column, with bootstrap 95% intervals in the repo.
+3. **Same tuning data.** One-hot labels from the train split, three seeds each for Laya and CLM, mean and
+   spread reported. Temperature refit on a held-out calibration slice for both.
+4. **Same latency protocol.** One stream, cold cache, fresh server process, 40 items per task from the same
+   client. Hosted engines include network time from a home connection (TLS handshake 145 ms to TypeSafe,
+   27 ms to Anthropic, paid once per connection).
+5. **Context is its own experiment**, not a confound: after the fair run, Laya was retrained and tested at
+   256, 512, 768, 1,536 and 2,048 tokens on the two long-input tasks.
+6. **Leakage is labelled, not hidden.** The typosquat positives carry templated README and publisher
+   fields (the packages are gone from the registries), and a fine-tuned model learns the template. Those
+   cells are marked leaky and excluded from every headline claim.
+
+## Results
+
+`[table: docs/_fair_table.md, regenerated at the end]`
+
+What the table says:
+
+**A fine-tuned 421M model matched or beat the hosted model on every honest task, at a tenth of the
+latency.** Laya off the shelf was at chance on four of five tasks. Eighteen minutes of training on two RTX
+3090s, three times over with different seeds, put it at 99.6% on quarantine (Jev 100%), 98% on curation
+(Jev 94%), 84 ±5.5% on reachability (Jev 89%) and 78% on license (Jev 63%), at 21 ms per decision against
+136 ms. The reachability gap is inside the noise of 98 test items; the license gap is not, and it goes the
+other way.
+
+**License is where fine-tuning does something a hosted model cannot.** Jev and Haiku both sit near 60%
+because ScanCode files the Redis and CockroachDB source-available licenses under "Non-Commercial" and plain
+permissive notices under "Proprietary Free". No rubric teaches a hosted model those boundaries. Labels do.
+
+**Rubric wording is Jev's real lever, and it is worth 15 points.** With "no release in years" as the
+abandoned criterion, Jev called 204 of 300 abandoned packages benign and scored 80% on curation. Restating
+it as "last release more than 4 years ago, even when not flagged" took it to 95% on the same items. Haiku
+inferred the rule either way. The v1 run is kept as an ablation.
+
+**Jev has one reproducible blind spot.** It got every reachability scenario right except the one where the
+vulnerable package sits under both a dev path and a prod path: 0 for 50. It saw "dev" and stopped.
+TypeSafe's own docs flag multi-hop conditions; this is what that looks like in a real rubric.
+
+**The generative reference is accurate and slow.** Haiku 4.5 tied Jev on three tasks and lost badly on
+reachability (59%, over-confident on dev-only and lookalike findings). At 1.15 s per decision it is 8x Jev
+and 50x Laya, and it costs about 25x Jev per token.
+
+**CLM-8B is the one we got wrong the first time, and the fix is a bug report.** Zero-shot it was at or
+below chance on every task: it embeds each rubric option as text and picks the nearest, which does not suit
+"which of these seven reasons". A 12-minute head fine-tune helped, but the served numbers were far below
+CLM's own evaluation of the same heads. Rebuilding its evaluation offline from its training embeddings
+reproduced its numbers exactly; the server disagreed on 27% of curation items. Cause: training sends the
+encoder pre-tokenized ids without special tokens, the server sends raw text and lets vLLM tokenize it, and
+with last-token pooling that shifts the embedding. With the server tokenizing like training, CLM tuned
+scores `[pending: re-evaluation]`. Its latency is set by the 8B encoder: 60 to 320 ms per fresh item on a
+3090, 1 ms on a repeated state from cache. A curation queue almost never repeats a state.
+
+**Context is a real dimension for one task and irrelevant for another.** Laya tuned on reachability:
+62% at 256 tokens, 81% at 512, 91% at 768, 86% at 1,536, `[pending: 2,048]`. License: 78 to 84% at every
+cap. The dependency tree needs to be seen whole; a license's obligations are in its first page.
+
+**Confidence gating works for Jev today and needs one more step for the fine-tunes.** Jev's calibration
+error on quarantine was 0.005, and 86% of its reachability answers came back above 0.9 confidence with 91%
+accuracy on that slice. The one-hot fine-tunes came out under-confident because the temperature fit hit its
+clamp on 400 calibration items; accuracy at a fixed 80% coverage is still 86 to 100%, but a production
+gate wants a bigger calibration slice or a distillation term.
+
+## What we didn't test
+
+- **Our own queue.** Everything here is public or synthetic. Two of the five tasks are synthetic enough that
+  a fine-tune can learn a template. The next step is an export of real review decisions, quarantine events
+  and lockfiles through the same harness.
+- **Serving under load.** Latency is one stream on a quiet box. A soak test at queue rates with p99 and
+  failure behaviour is a separate run. Jev's throughput scaled to 150 decisions/s at 64 streams from one
+  test key; Laya's HTTP server does about 60/s per GPU, its batch API over 100/s.
+- **CPU deployment.** Laya on a Ryzen 5900X was 270 to 710 ms per item, 15 to 25x the GPU, with a long
+  tail on 2k-token inputs. ONNX was not measured.
+- **Adversarial inputs.** READMEs are attacker-controlled and neither open model has any injection defence.
+- **Non-English packages** and **drift over time**.
+
+## What we'd do with it
+
+Use a hosted model, or Haiku, to bootstrap labels from the review pile, because they start from a written
+rule and need nothing else. Then fine-tune Laya on those labels, take the 10x latency and the self-hosting,
+and retrain weekly from human overrides. That loop, which the hosted model cannot close, is the actual
+advantage. The benchmark says the hand-off works and costs an afternoon.
+
+## Reproduce it
+
+Everything is in `github.com/brandonrc/jev-bench`: task generators with cached public data, the engine
+adapters, the fair-mode runner (`--state-cap`), the fine-tune pipeline for Laya (`jev_bench/finetune/`),
+the parquet export for CLM's trainer, the latency protocol, the context sweep, the CLM server patch, and
+every per-item result under `results/fair/`. Two 3090s reproduce the fine-tunes in under an hour; the
+hosted legs cost about 30 cents on Jev and $10 on Haiku.
