@@ -21,3 +21,6 @@
 {"probe": "repeat_same_state", "p50_ms": 153.16228699521162, "min_ms": 114.98279999068473, "in_tok": 1451.0, "out_tok": 50.0, "ts": 1790270413.2876182}
 {"probe": "fresh_state_each_call", "p50_ms": 0.00015999830793589354, "min_ms": 0.00014000397641211748, "in_tok": 1438.5, "out_tok": 50.0, "ts": 1790270416.3440747}
 {"probe": "repeat_vs_fresh_1000tok", "same_p50_ms": 153.8127639942104, "same_min_ms": 127.04807599948253, "fresh_p50_ms": 155.9846220043255, "fresh_min_ms": 131.98456399550196, "ts": 1790270452.319541}
+{"probe": "option_order_reversal", "task": "quarantine", "n": 60, "flips": 0, "acc_forward": 1.0, "acc_reversed": 1.0, "mean_abs_prob_shift": 0.0016666666666666663, "max_abs_prob_shift": 0.039999999999999925, "ts": 1790271412.7078235}
+{"probe": "option_order_reversal", "task": "curation", "n": 60, "flips": 2, "acc_forward": 0.9333333333333333, "acc_reversed": 0.9333333333333333, "mean_abs_prob_shift": 0.03216666666666667, "max_abs_prob_shift": 0.37, "ts": 1790271428.4385471}
+{"probe": "option_order_reversal", "task": "license", "n": 60, "flips": 4, "acc_forward": 0.6333333333333333, "acc_reversed": 0.65, "mean_abs_prob_shift": 0.0525, "max_abs_prob_shift": 0.26, "ts": 1790271444.5844884}
