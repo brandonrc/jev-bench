@@ -1,0 +1,327 @@
+[
+ {
+  "epoch": 0,
+  "val": {
+   "acc": 0.2505592841163311,
+   "soft_ce": 3.143993710511483,
+   "per_question": {
+    "family": 0.0511,
+    "impersonation": 0.4747,
+    "reachable": 0.6538,
+    "reason": 0.2564,
+    "verdict": 0.271
+   }
+  },
+  "test": {
+   "acc": 0.24289642529789185,
+   "soft_ce": 3.1854161333316626,
+   "per_question": {
+    "family": 0.0544,
+    "impersonation": 0.5081,
+    "reachable": 0.4286,
+    "reason": 0.1829,
+    "verdict": 0.2458
+   }
+  }
+ },
+ {
+  "epoch": 1,
+  "train_loss": 4.741574987769127,
+  "val": {
+   "acc": 0.3333333333333333,
+   "soft_ce": 2.036893533113552,
+   "per_question": {
+    "family": 0.1989,
+    "impersonation": 0.5152,
+    "reachable": 0.6154,
+    "reason": 0.3077,
+    "verdict": 0.3271
+   }
+  }
+ },
+ {
+  "epoch": 2,
+  "train_loss": 2.7357117980718613,
+  "val": {
+   "acc": 0.5570469798657718,
+   "soft_ce": 1.1704816967582277,
+   "per_question": {
+    "family": 0.3977,
+    "impersonation": 0.9798,
+    "reachable": 0.5385,
+    "reason": 0.4872,
+    "verdict": 0.4579
+   }
+  }
+ },
+ {
+  "epoch": 3,
+  "train_loss": 2.1874100491404533,
+  "val": {
+   "acc": 0.6845637583892618,
+   "soft_ce": 0.9126097062556803,
+   "per_question": {
+    "family": 0.4375,
+    "impersonation": 0.9798,
+    "reachable": 0.5769,
+    "reason": 0.7179,
+    "verdict": 0.8318
+   }
+  }
+ },
+ {
+  "epoch": 4,
+  "train_loss": 1.9680207520723343,
+  "val": {
+   "acc": 0.697986577181208,
+   "soft_ce": 0.8180683144520327,
+   "per_question": {
+    "family": 0.4375,
+    "impersonation": 0.9899,
+    "reachable": 0.5769,
+    "reason": 0.8205,
+    "verdict": 0.8411
+   }
+  }
+ },
+ {
+  "epoch": 5,
+  "train_loss": 1.8889997974038124,
+  "val": {
+   "acc": 0.7516778523489933,
+   "soft_ce": 0.7369629307347922,
+   "per_question": {
+    "family": 0.517,
+    "impersonation": 1.0,
+    "reachable": 0.6538,
+    "reason": 0.8974,
+    "verdict": 0.8785
+   }
+  }
+ },
+ {
+  "epoch": 6,
+  "train_loss": 1.8056785017251968,
+  "val": {
+   "acc": 0.7404921700223713,
+   "soft_ce": 0.7185879649731937,
+   "per_question": {
+    "family": 0.517,
+    "impersonation": 0.9798,
+    "reachable": 0.5385,
+    "reason": 0.8974,
+    "verdict": 0.8785
+   }
+  }
+ },
+ {
+  "epoch": 7,
+  "train_loss": 1.7408837974071503,
+  "val": {
+   "acc": 0.7449664429530202,
+   "soft_ce": 0.6866490579558165,
+   "per_question": {
+    "family": 0.5057,
+    "impersonation": 0.9899,
+    "reachable": 0.5385,
+    "reason": 0.8974,
+    "verdict": 0.9065
+   }
+  }
+ },
+ {
+  "epoch": 8,
+  "train_loss": 1.6843952387571335,
+  "val": {
+   "acc": 0.7606263982102909,
+   "soft_ce": 0.658593209797904,
+   "per_question": {
+    "family": 0.5227,
+    "impersonation": 0.9899,
+    "reachable": 0.6923,
+    "reason": 0.9231,
+    "verdict": 0.8972
+   }
+  }
+ },
+ {
+  "epoch": 9,
+  "train_loss": 1.6411242485046387,
+  "val": {
+   "acc": 0.7628635346756152,
+   "soft_ce": 0.6558491282281727,
+   "per_question": {
+    "family": 0.5227,
+    "impersonation": 0.9899,
+    "reachable": 0.6538,
+    "reason": 0.9487,
+    "verdict": 0.9065
+   }
+  }
+ },
+ {
+  "epoch": 10,
+  "train_loss": 1.64300899207592,
+  "val": {
+   "acc": 0.7718120805369127,
+   "soft_ce": 0.6181799144019483,
+   "per_question": {
+    "family": 0.5455,
+    "impersonation": 0.9899,
+    "reachable": 0.6538,
+    "reason": 0.9744,
+    "verdict": 0.8972
+   }
+  }
+ },
+ {
+  "epoch": 11,
+  "train_loss": 1.601249821484089,
+  "val": {
+   "acc": 0.7628635346756152,
+   "soft_ce": 0.6175845016035725,
+   "per_question": {
+    "family": 0.5341,
+    "impersonation": 0.9899,
+    "reachable": 0.6154,
+    "reason": 0.9231,
+    "verdict": 0.9065
+   }
+  }
+ },
+ {
+  "epoch": 12,
+  "train_loss": 1.598045028746128,
+  "val": {
+   "acc": 0.7651006711409396,
+   "soft_ce": 0.6135371632757336,
+   "per_question": {
+    "family": 0.5511,
+    "impersonation": 0.9899,
+    "reachable": 0.5,
+    "reason": 0.9744,
+    "verdict": 0.8972
+   }
+  }
+ },
+ {
+  "epoch": 13,
+  "train_loss": 1.5685536563396454,
+  "val": {
+   "acc": 0.7807606263982103,
+   "soft_ce": 0.5900170744398829,
+   "per_question": {
+    "family": 0.5682,
+    "impersonation": 1.0,
+    "reachable": 0.5769,
+    "reason": 0.9744,
+    "verdict": 0.9065
+   }
+  }
+ },
+ {
+  "epoch": 14,
+  "train_loss": 1.5582553818821907,
+  "val": {
+   "acc": 0.7762863534675615,
+   "soft_ce": 0.5959152385959156,
+   "per_question": {
+    "family": 0.5625,
+    "impersonation": 1.0,
+    "reachable": 0.5769,
+    "reason": 0.9744,
+    "verdict": 0.8972
+   }
+  }
+ },
+ {
+  "epoch": 15,
+  "train_loss": 1.5291146710515022,
+  "val": {
+   "acc": 0.7829977628635347,
+   "soft_ce": 0.5876919556517463,
+   "per_question": {
+    "family": 0.5625,
+    "impersonation": 1.0,
+    "reachable": 0.6154,
+    "reason": 0.9744,
+    "verdict": 0.9159
+   }
+  }
+ },
+ {
+  "epoch": 16,
+  "train_loss": 1.5085997357964516,
+  "val": {
+   "acc": 0.7919463087248322,
+   "soft_ce": 0.5676408304730785,
+   "per_question": {
+    "family": 0.6023,
+    "impersonation": 0.9899,
+    "reachable": 0.6154,
+    "reason": 0.9744,
+    "verdict": 0.8972
+   }
+  }
+ },
+ {
+  "epoch": 17,
+  "train_loss": 1.5154680535197258,
+  "val": {
+   "acc": 0.7829977628635347,
+   "soft_ce": 0.5751167485111245,
+   "per_question": {
+    "family": 0.5739,
+    "impersonation": 0.9899,
+    "reachable": 0.6154,
+    "reason": 0.9744,
+    "verdict": 0.9065
+   }
+  }
+ },
+ {
+  "epoch": 18,
+  "train_loss": 1.4977497979998589,
+  "val": {
+   "acc": 0.785234899328859,
+   "soft_ce": 0.5748398149306876,
+   "per_question": {
+    "family": 0.5852,
+    "impersonation": 0.9899,
+    "reachable": 0.5769,
+    "reason": 0.9744,
+    "verdict": 0.9065
+   }
+  }
+ },
+ {
+  "epoch": 19,
+  "train_loss": 1.5234316438436508,
+  "val": {
+   "acc": 0.7897091722595079,
+   "soft_ce": 0.571907616301671,
+   "per_question": {
+    "family": 0.5966,
+    "impersonation": 0.9899,
+    "reachable": 0.5769,
+    "reason": 0.9744,
+    "verdict": 0.9065
+   }
+  }
+ },
+ {
+  "epoch": 20,
+  "train_loss": 1.5131029039621353,
+  "val": {
+   "acc": 0.7897091722595079,
+   "soft_ce": 0.5714534849128468,
+   "per_question": {
+    "family": 0.5966,
+    "impersonation": 0.9899,
+    "reachable": 0.5769,
+    "reason": 0.9744,
+    "verdict": 0.9065
+   }
+  }
+ }
+]
