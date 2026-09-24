@@ -84,15 +84,15 @@ TypeSafe's own docs flag multi-hop conditions; this is what that looks like in a
 reachability (59%, over-confident on dev-only and lookalike findings). At 1.15 s per decision it is 8x Jev
 and 50x Laya, and it costs about 25x Jev per token.
 
-**CLM-8B is the one we got wrong the first time, and the fix is a bug report.** Zero-shot it was at or
-below chance on every task: it embeds each rubric option as text and picks the nearest, which does not suit
-"which of these seven reasons". A 12-minute head fine-tune helped, but the served numbers were far below
-CLM's own evaluation of the same heads. Rebuilding its evaluation offline from its training embeddings
-reproduced its numbers exactly; the server disagreed on 27% of curation items. Cause: training sends the
-encoder pre-tokenized ids without special tokens, the server sends raw text and lets vLLM tokenize it, and
-with last-token pooling that shifts the embedding. With the server tokenizing like training, CLM tuned
-scores `[pending: re-evaluation]`. Its latency is set by the 8B encoder: 60 to 320 ms per fresh item on a
-3090, 1 ms on a repeated state from cache. A curation queue almost never repeats a state.
+**CLM-8B is the one we got wrong the first time, and the bug was ours.** Zero-shot it was at or below chance
+on every task: it embeds each rubric option as text and picks the nearest, which does not suit "which of these
+seven reasons". A 12-minute head fine-tune helped, but our served numbers were 15 points below CLM's own
+evaluation of the same heads. After chasing a tokenization theory that an A/B test refuted (server and training
+embeddings were identical for the same text), the cause turned out to be our export: we stored the prose state as
+a JSON-quoted string, CLM's loader keeps that as literal text, so the heads trained on `"...\n..."` with escaped
+newlines while the server embedded real prose. Same text in, same numbers out. With the export fixed, CLM tuned
+scores `[pending: fixed re-evaluation]`. Its latency is set by the 8B encoder: 56 to 190 ms per fresh capped item
+on a 3090, 1 ms on a repeated state from cache. A curation queue almost never repeats a state.
 
 **Context is a real dimension for one task and irrelevant for another.** Laya tuned on reachability:
 62% at 256 tokens, 81% at 512, 91% at 768, 86% at 1,536, 80% at 2,048 (the last three are within the noise of 98 items;
