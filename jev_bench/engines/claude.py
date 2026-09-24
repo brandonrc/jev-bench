@@ -35,7 +35,7 @@ class Claude:
         r = self.client.messages.parse(
             model=self.model, max_tokens=512,
             system=[{"type": "text", "text": self._system(spec), "cache_control": {"type": "ephemeral"}}],
-            messages=[{"role": "user", "content": "STATE:\n" + json.dumps(state, indent=1)}],
+            messages=[{"role": "user", "content": "STATE:\n" + (state if isinstance(state, str) else json.dumps(state, indent=1))}],
             output_format=Model, **kw)
         if r.stop_reason == "refusal": raise RuntimeError("refusal")
         o = r.parsed_output

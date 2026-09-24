@@ -6,6 +6,7 @@
 import argparse, json, os, time, statistics, concurrent.futures as cf
 from .tasks import TASK_NAMES, load_task, read_items, write_items
 from .engines import load_engine
+from .state import prepare_state
 
 def main():
     ap = argparse.ArgumentParser()
@@ -17,6 +18,7 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--out", default="results/raw")
     ap.add_argument("--rebuild", action="store_true", help="rebuild task data instead of reading data/<task>/items.jsonl")
+    ap.add_argument("--state-cap", type=int, default=None, help="render every state to prose and cap it at N reference tokens (fair-comparison mode); results get meta.state_cap")
     ap.add_argument("--split", default=None, choices=[None, "train", "test"], help="restrict to one split (fine-tuned engines must use test)")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
@@ -33,15 +35,18 @@ def main():
             with open(path, "a") as out:
                 for run in range(a.runs):
                     def one(it):
+                        state = it.state; extra = {}
+                        if a.state_cap:
+                            state, ntok, trunc = prepare_state(tname, it.state, a.state_cap); extra = {"state_cap": a.state_cap, "state_tokens": ntok, "truncated": trunc}
                         t0 = time.perf_counter()
                         try:
-                            ans = eng.answer(it.state, mod.QUESTION, mod.QKEY); err = None
+                            ans = eng.answer(state, mod.QUESTION, mod.QKEY); err = None
                         except Exception as e:
                             ans, err = None, f"{type(e).__name__}: {str(e)[:300]}"
                         ms = (time.perf_counter() - t0) * 1000
                         return {"engine": eng.name, "task": tname, "run": run, "concurrency": conc, "id": it.id, "label": it.label,
                                 "pred": ans.pred if ans else None, "conf": ans.conf if ans else None, "ms": round(ms, 2),
-                                "usage": ans.usage if ans else {}, "raw": ans.raw if ans else None, "meta": it.meta, "err": err, "ts": time.time()}
+                                "usage": ans.usage if ans else {}, "raw": ans.raw if ans else None, "meta": {**it.meta, **extra}, "err": err, "ts": time.time()}
                     t_start = time.perf_counter()
                     if conc > 1:
                         with cf.ThreadPoolExecutor(conc) as ex: rows = list(ex.map(one, items))

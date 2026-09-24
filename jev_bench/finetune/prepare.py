@@ -11,6 +11,7 @@ import argparse, json, os, random, collections
 import torch
 from laya.agent import Agent
 from laya.common import build_sequence, render_options, QTYPES
+from ..state import prepare_state
 from jev_bench.tasks import load_task, read_items
 from .common import resolve_base, load_cfg_tok
 from .compact import compact_state
@@ -62,6 +63,7 @@ def main():
     ap.add_argument("--head-max-len", type=int, default=None)
     ap.add_argument("--state-chars", type=int, default=4000, help="cap on serialized state chars before tokenizing (0 = off)")
     ap.add_argument("--no-compact", action="store_true", help="disable task-aware compaction (reachability tree pruning)")
+    ap.add_argument("--state-cap", type=int, default=None, help="fair mode: render state to prose and cap at N reference tokens (jev_bench.state.prepare_state); overrides --state-chars/--no-compact")
     ap.add_argument("--distill", action="store_true", help="soft targets from results/distill/jev__<task>.jsonl")
     ap.add_argument("--distill-weight", type=float, default=1.0)
     ap.add_argument("--calib-frac", type=float, default=0.10)
@@ -85,7 +87,7 @@ def main():
             assert it.meta.get("split") == "train"
             raw = raws.get(it.id)
             n_soft += raw is not None
-            state = compact_state(it.state, a.state_chars, not a.no_compact)
+            state = prepare_state(task, it.state, a.state_cap)[0] if a.state_cap else compact_state(it.state, a.state_chars, not a.no_compact)
             seq, markers = build_sequence(tok, state, q, max_len, head_max_len)
             if len(markers) != k:
                 n_drop += 1
@@ -110,7 +112,7 @@ def main():
     torch.save(train, os.path.join(out, "train_items.pt"))
     torch.save(calib, os.path.join(out, "calib_items.pt"))
     meta = {"run": a.run, "tasks": a.tasks, "base": a.base, "subfolder": sub, "base_dir": model_dir,
-            "max_len": max_len, "head_max_len": head_max_len, "state_chars": a.state_chars, "compact": not a.no_compact,
+            "max_len": max_len, "head_max_len": head_max_len, "state_chars": a.state_chars, "compact": not a.no_compact, "state_cap": a.state_cap,
             "distill": a.distill, "distill_weight": a.distill_weight, "n_train": len(train), "n_calib": len(calib), "per_task": stats}
     json.dump(meta, open(os.path.join(out, "prep_meta.json"), "w"), indent=1)
     print(f"wrote {out}: {len(train)} train, {len(calib)} calib  (max_len={max_len}, head_max_len={head_max_len})")

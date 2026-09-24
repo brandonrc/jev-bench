@@ -19,7 +19,7 @@ class Laya:
         self._compact = (lambda s: s)
         if jb:
             from ..finetune.compact import compact_state
-            self._compact = lambda s: compact_state(s, jb.get("state_chars", 0), jb.get("compact", True))
+            self._compact = lambda s: s if isinstance(s, str) else compact_state(s, jb.get("state_chars", 0), jb.get("compact", True))
     def answer(self, state, question, qkey):
         return decode(self.agent.predict(self._compact(state), question)["answers"], qkey)
     def answer_batch(self, states, question, qkey, batch_size=64):
