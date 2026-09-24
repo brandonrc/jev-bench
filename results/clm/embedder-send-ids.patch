@@ -1,0 +1,46 @@
+diff --git a/src/clm/embedder.py b/src/clm/embedder.py
+index b19cb70..45320b9 100644
+--- a/src/clm/embedder.py
++++ b/src/clm/embedder.py
+@@ -9,6 +9,7 @@ The reference head expects Qwen3-8B with last-token pooling, e.g.
+ from __future__ import annotations
+ 
+ import base64
++import os
+ import threading
+ from collections import OrderedDict
+ from typing import Any
+@@ -37,10 +38,30 @@ class Embedder:
+         if api_key:
+             self.session.headers["Authorization"] = f"Bearer {api_key}"
+ 
++    _recipe_tok = None
++    def _ids(self, texts: list[str]) -> list[list[int]]:
++        """jev-bench patch: tokenize exactly like train/embed_utils.Recipe.text_ids (no special tokens, tail kept),
++        so served embeddings match the ones the heads were trained on. Enabled with CLM_SEND_IDS=1."""
++        if Embedder._recipe_tok is None:
++            from transformers import AutoTokenizer
++            Embedder._recipe_tok = AutoTokenizer.from_pretrained(os.environ.get("CLM_RECIPE_MODEL", "Qwen/Qwen3-8B"), trust_remote_code=True)
++        cap = (self.max_tokens or 2048) - 1
++        out = []
++        for t in texts:
++            ids = Embedder._recipe_tok(t, add_special_tokens=False)["input_ids"]
++            if hasattr(ids, "keys"): ids = ids["input_ids"]
++            if ids and isinstance(ids[0], list): ids = ids[0]
++            ids = list(ids) or Embedder._recipe_tok(" ", add_special_tokens=False)["input_ids"]
++            out.append(ids[-cap:])
++        return out
++
+     def _fetch(self, texts: list[str]) -> tuple[list[np.ndarray], int]:
+-        body: dict[str, Any] = {"model": self.model, "input": texts, "encoding_format": "base64"}
+-        if self.max_tokens:
+-            body["truncate_prompt_tokens"] = self.max_tokens
++        if os.environ.get("CLM_SEND_IDS") == "1":
++            body: dict[str, Any] = {"model": self.model, "input": self._ids(texts), "encoding_format": "base64"}
++        else:
++            body = {"model": self.model, "input": texts, "encoding_format": "base64"}
++            if self.max_tokens:
++                body["truncate_prompt_tokens"] = self.max_tokens
+         try:
+             r = self.session.post(self.url, json=body, timeout=self.timeout)
+         except requests.RequestException as e:
