@@ -6,7 +6,7 @@ from . import Answer, decode
 
 class CLMHTTP:
     def __init__(self, url="http://localhost:8700", model="clm-latest"):
-        self.name = "clm-8b" if model == "clm-latest" else f"clm-{model}"; self.model = model
+        self.name = "clm-8b" if model == "clm-latest" else model; self.model = model
         self.client = httpx.Client(base_url=url, timeout=120)
     def answer(self, state, question, qkey):
         r = self.client.post("/v1/systemone", json={"state": state, "questions": question, "model": self.model}); r.raise_for_status()
