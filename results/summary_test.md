@@ -1,0 +1,24 @@
+| task | engine | n (test) | acc | lenient | macro-F1 | ECE | cov@0.9 | acc@0.9 | p50 ms |
+|---|---|---|---|---|---|---|---|---|---|
+| license | jev | 423 | 0.641 | 0.778 | 0.633 | 0.132 | 0.41 | 0.860 | 199 |
+| license | claude-haiku-4-5 | 423 | 0.586 | 0.728 | 0.566 | 0.233 | 0.34 | 0.755 | 825 |
+| license | laya-typed-decisions | 423 | 0.187 | 0.255 | 0.173 | 0.098 | 0.00 | nan | 28 |
+| license | laya-ft-all-onehot | 423 | 0.792 | 0.839 | 0.785 | 0.114 | 0.08 | 1.000 | 30 |
+| license | laya-ft-all-distill | 423 | 0.570 | 0.721 | 0.534 | 0.050 | 0.09 | 0.917 | 31 |
+| reachability | jev | 98 | 0.888 | - | 0.880 | 0.047 | 0.87 | 0.894 | 193 |
+| reachability | claude-haiku-4-5 | 98 | 0.643 | - | 0.632 | 0.318 | 0.95 | 0.634 | 989 |
+| reachability | laya-typed-decisions | 98 | 0.429 | - | 0.300 | 0.221 | 0.00 | nan | 32 |
+| reachability | laya-ft-all-onehot | 98 | 0.888 | - | 0.885 | 0.095 | 0.79 | 0.896 | 22 |
+| reachability | laya-ft-all-distill | 98 | 0.816 | - | 0.807 | 0.118 | 0.38 | 1.000 | 22 |
+| quarantine | jev | 82 | 1.000 | - | 1.000 | 0.004 | 0.99 | 1.000 | 171 |
+| quarantine | claude-haiku-4-5 | 82 | 0.988 | - | 0.988 | 0.037 | 1.00 | 0.988 | 796 |
+| quarantine | laya-typed-decisions | 82 | 0.817 | - | 0.807 | 0.746 | 0.00 | nan | 19 |
+| quarantine | laya-ft-all-onehot | 82 | 0.988 | - | 0.988 | 0.075 | 0.94 | 1.000 | 20 |
+| quarantine | laya-ft-all-distill | 82 | 1.000 | - | 1.000 | 0.031 | 0.91 | 1.000 | 21 |
+| curation | jev | 240 | 0.942 | - | 0.941 | 0.035 | 0.80 | 0.990 | 162 |
+| curation | claude-haiku-4-5 | 240 | 0.975 | - | 0.975 | 0.049 | 0.83 | 0.995 | 806 |
+| curation | laya-typed-decisions | 240 | 0.317 | - | 0.237 | 0.256 | 0.00 | nan | 18 |
+| curation | laya-ft-all-onehot | 240 | 0.979 | - | 0.978 | 0.053 | 0.95 | 0.987 | 19 |
+| curation | laya-ft-all-distill | 240 | 0.938 | - | 0.936 | 0.085 | 0.63 | 1.000 | 19 |
+| typosquat | jev | 248 | 0.952 | - | 0.951 | 0.114 | 0.51 | 1.000 | 188 |
+| typosquat | claude-haiku-4-5 | 248 | 0.935 | - | 0.935 | 0.099 | 0.71 | 0.994 | 734 |

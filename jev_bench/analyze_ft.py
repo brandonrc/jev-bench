@@ -2,13 +2,16 @@
 fine-tuned Laya rows from results/raw-ft (which were run with --split test)."""
 import glob, json, collections, statistics, os, sys
 from .analyze import ece, macro_f1, coverage, pct, _equiv
+from .tasks import split_of
 
 def load(pattern, split_filter):
     rows = [json.loads(l) for f in glob.glob(pattern) for l in open(f)]
-    return [r for r in rows if r["err"] is None and (not split_filter or r["meta"].get("split") == "test")]
+    for r in rows: r["meta"].setdefault("split", split_of(r["id"]))   # older runs predate the split field
+    return [r for r in rows if r["err"] is None and (not split_filter or r["meta"]["split"] == "test")]
 
 def main(out="results/summary_test.md"):
-    rows = load("results/raw/*.jsonl", True) + load("results/raw-ft/*.jsonl", False)
+    rows = load("results/raw/*.jsonl", True) + load("results/raw-ft/*.jsonl", True)
+    seen = set(); rows = [r for r in rows if not ((r["engine"], r["task"], r["id"]) in seen or seen.add((r["engine"], r["task"], r["id"])))]
     g = collections.defaultdict(list)
     for r in rows: g[(r["task"], r["engine"])].append(r)
     order = ["jev", "claude-haiku-4-5", "laya-typed-decisions", "laya-ft-all-onehot", "laya-ft-all-distill", "laya-ft-all5-onehot"]
