@@ -1,0 +1,23 @@
+{"probe": "option_count", "n_options": 2, "p50_ms": 139.63471198803745, "min_ms": 115.29058200540021, "in_tok": 635.0, "out_tok": 34.0, "ts": 1790270378.9540932}
+{"probe": "option_count", "n_options": 4, "p50_ms": 128.33100800344255, "min_ms": 111.44161700212862, "in_tok": 667.0, "out_tok": 50.0, "ts": 1790270380.7134755}
+{"probe": "option_count", "n_options": 8, "p50_ms": 145.58061200659722, "min_ms": 120.69744999462273, "in_tok": 731.0, "out_tok": 82.0, "ts": 1790270382.481755}
+{"probe": "option_count", "n_options": 16, "p50_ms": 152.61525500682183, "min_ms": 118.32868499914184, "in_tok": 871.0, "out_tok": 152.0, "ts": 1790270384.3313}
+{"probe": "option_count", "n_options": 32, "p50_ms": 138.32691998686641, "min_ms": 118.3363550080685, "in_tok": 1159.0, "out_tok": 296.0, "ts": 1790270386.0428622}
+{"probe": "option_count", "n_options": 64, "p50_ms": 139.8408310051309, "min_ms": 116.5302720037289, "in_tok": 1735.0, "out_tok": 584.0, "ts": 1790270387.8455112}
+{"probe": "option_name_len", "name_len": 1, "p50_ms": 135.8378500008257, "min_ms": 117.30509299377445, "in_tok": 731.0, "out_tok": 82.0, "ts": 1790270389.5276413}
+{"probe": "option_name_len", "name_len": 12, "p50_ms": 160.48531299747992, "min_ms": 117.10249500174541, "in_tok": 771.0, "out_tok": 127.0, "ts": 1790270391.3497915}
+{"probe": "option_name_len", "name_len": 40, "p50_ms": 129.82556800125167, "min_ms": 115.21281900058966, "in_tok": 883.0, "out_tok": 253.0, "ts": 1790270393.1010334}
+{"probe": "state_len", "state_tokens": 50, "p50_ms": 129.69561300997157, "min_ms": 112.0175499963807, "in_tok": 401.0, "out_tok": 50.0, "ts": 1790270394.230324}
+{"probe": "state_len", "state_tokens": 300, "p50_ms": 143.02776000113226, "min_ms": 115.05995300831273, "in_tok": 679.0, "out_tok": 50.0, "ts": 1790270395.495605}
+{"probe": "state_len", "state_tokens": 1000, "p50_ms": 159.23627199663315, "min_ms": 138.10977099637967, "in_tok": 1443.0, "out_tok": 50.0, "ts": 1790270396.7195733}
+{"probe": "state_len", "state_tokens": 3000, "p50_ms": 187.58091299969237, "min_ms": 154.52233199903276, "in_tok": 3609.0, "out_tok": 50.0, "ts": 1790270398.1799483}
+{"probe": "state_len", "state_tokens": 8000, "p50_ms": 209.39487199939322, "min_ms": 173.7563860078808, "in_tok": 9100.0, "out_tok": 50.0, "ts": 1790270399.8169074}
+{"probe": "state_len", "state_tokens": 16000, "p50_ms": 256.31902199529577, "min_ms": 235.65039900131524, "in_tok": 17889.0, "out_tok": 50.0, "ts": 1790270401.8929236}
+{"probe": "questions_per_call", "n_questions": 1, "p50_ms": 137.18516399967484, "min_ms": 112.33923299005255, "in_tok": 671.0, "out_tok": 51.0, "ts": 1790270403.5233693}
+{"probe": "questions_per_call", "n_questions": 2, "p50_ms": 133.44042300013825, "min_ms": 109.33174299134407, "in_tok": 763.0, "out_tok": 99.0, "ts": 1790270405.158727}
+{"probe": "questions_per_call", "n_questions": 5, "p50_ms": 146.7552190006245, "min_ms": 110.54374200466555, "in_tok": 1039.0, "out_tok": 243.0, "ts": 1790270406.8834374}
+{"probe": "questions_per_call", "n_questions": 10, "p50_ms": 146.85166301205754, "min_ms": 119.96265999914613, "in_tok": 1499.0, "out_tok": 483.0, "ts": 1790270408.6458812}
+{"probe": "questions_per_call", "n_questions": 20, "p50_ms": 138.2869280059822, "min_ms": 123.3015549951233, "in_tok": 2429.0, "out_tok": 973.0, "ts": 1790270410.3106482}
+{"probe": "repeat_same_state", "p50_ms": 153.16228699521162, "min_ms": 114.98279999068473, "in_tok": 1451.0, "out_tok": 50.0, "ts": 1790270413.2876182}
+{"probe": "fresh_state_each_call", "p50_ms": 0.00015999830793589354, "min_ms": 0.00014000397641211748, "in_tok": 1438.5, "out_tok": 50.0, "ts": 1790270416.3440747}
+{"probe": "repeat_vs_fresh_1000tok", "same_p50_ms": 153.8127639942104, "same_min_ms": 127.04807599948253, "fresh_p50_ms": 155.9846220043255, "fresh_min_ms": 131.98456399550196, "ts": 1790270452.319541}
