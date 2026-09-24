@@ -44,33 +44,42 @@ Fine-tunes see train only; **every number below is on the test split, for every 
 | license | laya-typed-decisions | 423 | 0.187 | 0.255 | 0.173 | 0.098 | 0.00 | nan | 28 |
 | license | laya-ft-all-onehot | 423 | 0.792 | 0.839 | 0.785 | 0.114 | 0.08 | 1.000 | 30 |
 | license | laya-ft-all-distill | 423 | 0.570 | 0.721 | 0.534 | 0.050 | 0.09 | 0.917 | 31 |
+| license | laya-ft-all5-onehot | 423 | 0.775 | 0.818 | 0.756 | 0.124 | 0.41 | 0.954 | 30 |
 | reachability | jev | 98 | 0.888 | - | 0.880 | 0.047 | 0.87 | 0.894 | 193 |
 | reachability | claude-haiku-4-5 | 98 | 0.643 | - | 0.632 | 0.318 | 0.95 | 0.634 | 989 |
 | reachability | laya-base | 98 | 0.429 | - | 0.300 | 0.283 | 0.00 | nan | 20 |
 | reachability | laya-typed-decisions | 98 | 0.429 | - | 0.300 | 0.221 | 0.00 | nan | 32 |
 | reachability | laya-ft-all-onehot | 98 | 0.888 | - | 0.885 | 0.095 | 0.79 | 0.896 | 22 |
 | reachability | laya-ft-all-distill | 98 | 0.816 | - | 0.807 | 0.118 | 0.38 | 1.000 | 22 |
+| reachability | laya-ft-all5-onehot | 98 | 0.827 | - | 0.821 | 0.067 | 0.63 | 0.952 | 22 |
 | quarantine | jev | 82 | 1.000 | - | 1.000 | 0.004 | 0.99 | 1.000 | 171 |
 | quarantine | claude-haiku-4-5 | 82 | 0.988 | - | 0.988 | 0.037 | 1.00 | 0.988 | 796 |
 | quarantine | laya-base | 82 | 0.793 | - | 0.796 | 0.508 | 0.00 | nan | 18 |
 | quarantine | laya-typed-decisions | 82 | 0.817 | - | 0.807 | 0.746 | 0.00 | nan | 19 |
 | quarantine | laya-ft-all-onehot | 82 | 0.988 | - | 0.988 | 0.075 | 0.94 | 1.000 | 20 |
 | quarantine | laya-ft-all-distill | 82 | 1.000 | - | 1.000 | 0.031 | 0.91 | 1.000 | 21 |
+| quarantine | laya-ft-all5-onehot | 82 | 0.988 | - | 0.988 | 0.035 | 0.95 | 1.000 | 20 |
 | curation | jev | 240 | 0.942 | - | 0.941 | 0.035 | 0.80 | 0.990 | 162 |
 | curation | claude-haiku-4-5 | 240 | 0.975 | - | 0.975 | 0.049 | 0.83 | 0.995 | 806 |
 | curation | laya-base | 240 | 0.279 | - | 0.198 | 0.091 | 0.00 | nan | 18 |
 | curation | laya-typed-decisions | 240 | 0.317 | - | 0.237 | 0.256 | 0.00 | nan | 18 |
 | curation | laya-ft-all-onehot | 240 | 0.979 | - | 0.978 | 0.053 | 0.95 | 0.987 | 19 |
 | curation | laya-ft-all-distill | 240 | 0.938 | - | 0.936 | 0.085 | 0.63 | 1.000 | 19 |
+| curation | laya-ft-all5-onehot | 240 | 0.992 | - | 0.991 | 0.015 | 0.98 | 0.992 | 19 |
 | typosquat | jev | 248 | 0.952 | - | 0.951 | 0.114 | 0.51 | 1.000 | 188 |
 | typosquat | claude-haiku-4-5 | 248 | 0.935 | - | 0.935 | 0.099 | 0.71 | 0.994 | 734 |
+| typosquat | laya-base | 248 | 0.472 | - | 0.394 | 0.142 | 0.00 | nan | 16 |
 | typosquat | laya-typed-decisions | 248 | 0.516 | - | 0.348 | 0.055 | 0.00 | nan | 15 |
+| typosquat | laya-ft-all5-onehot | 248 | 1.000 | - | 1.000 | 0.001 | 1.00 | 1.000 | 16 |
 
 Highlights:
 
-- **A 15-minute fine-tune put local Laya level with Jev on every task at a tenth of the latency**:
-  license 0.79 vs 0.64, reachability 0.89 vs 0.89, quarantine 0.99 vs 1.00, curation 0.98 vs 0.94,
+- **An 18-minute fine-tune put local Laya level with Jev on every task at a tenth of the latency** (all5-onehot):
+  license 0.78 vs 0.64, reachability 0.83 vs 0.89 (0.89 in the four-task run; n=98), quarantine 0.99 vs 1.00, curation 0.99 vs 0.94,
   at 19 to 30 ms vs 160 to 200 ms. Zero-shot Laya was at chance. Recipe in `jev_bench/finetune/README.md`.
+- **Typosquat 100% for the fine-tune is template leakage, not skill**: positives' README/publisher are synthesized
+  (the malicious packages are gone from the registries) and the model learned the template. Jev 0.95 / Haiku 0.94 are
+  the meaningful numbers there; both drop to the 60s on the 180 hard items.
 - **Distilling from Jev** (soft targets from its probabilities) calibrates better but learns Jev's mistakes:
   license 0.57. Use one-hot labels for accuracy.
 - **Rubric wording moved Jev 0.80 -> 0.95 on curation** (stating the 4-year abandoned rule);
