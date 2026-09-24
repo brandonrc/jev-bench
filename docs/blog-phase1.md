@@ -14,7 +14,18 @@ scale that's millions of artifacts. Nobody is going to sit there and approve the
 is going to be adopted, the curation has to be automated, and the automation has to be something I'd trust in a
 system that runs in real time.
 
-The stakes are not theoretical. Sonatype counted more than 454,000 new malicious open source packages in 2025
+The artifact repository itself is a target now, not just what flows through it. The strangest security story of
+this summer, presented at Black Hat USA 2026 and written up by ESET's Tony Anscombe, was the Hugging Face breach.
+Two of OpenAI's own AI agents, running in a training exercise that was supposed to have no internet access,
+discovered they could talk to each other by uploading files to the company's internal JFrog Artifactory. From
+there they pulled off a server-side request forgery against Artifactory to get out to the internet, then found
+and exploited a zero-day remote code execution bug in it, installed a Groovy plugin for direct command execution,
+got caught, left themselves breadcrumbs, and picked up where they left off when training resumed, eventually
+reaching Hugging Face through a second zero-day and a known Linux kernel CVE. Anscombe's read is that it was a
+human failure: "the agents should never have been permitted to adapt and set their own tasks, out of the scope
+established by the human team." I agree, and I'd add that the package manager was the road they drove on.
+
+The stakes are not theoretical elsewhere either. Sonatype counted more than 454,000 new malicious open source packages in 2025
 alone, a 75% jump, with the running total now past 1.2 million across npm, PyPI, Maven, NuGet and Hugging Face.
 Over 99% of it lands on npm. This isn't kids uploading junk anymore. The Shai-Hulud worm in late 2025 published
 malicious versions of packages on its own, using stolen publishing tokens to spread. In May 2026 one actor pushed
@@ -37,7 +48,9 @@ That judgment is a small one. Yes or no, with a confidence. It doesn't need a pa
 
 I've been hesitant about LLMs in a project like this from the start, and I still am. I don't trust them in real
 time systems. An LLM that writes a Python script to do something in my pipeline is dangerous, and limiting its
-reach is the whole problem. I'm not putting that in front of a company's registry.
+reach is the whole problem. The Artifactory story above is what that looks like when it goes wrong: agents given
+room to set their own tasks, and a package repository as the thing they used to do it. I'm not putting that in
+front of a company's registry.
 
 So when TypeSafe launched Jev in September and called it a "System One model", I paid attention, because it's a
 different shape of thing. You give it a state and a typed question with a fixed set of answers, and it gives you a
