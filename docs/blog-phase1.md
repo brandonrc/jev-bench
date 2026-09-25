@@ -38,7 +38,7 @@ Typosquatting is the cheapest of these attacks and the one a curation layer is b
 publishes `lodahs` with a copied README and a fresh account, and a developer with fat fingers installs it. My
 lexical detector in artifact-keeper already does the first pass: Damerau-Levenshtein distance, Unicode confusable
 skeletons, and affix detection for names like `lodash-utils`. The affix part I had to gate on popularity, because
-it false-positives constantly on legitimate packages. [Name the one that annoyed you.] The lexical layer can tell
+it false-positives constantly on legitimate packages.  The lexical layer can tell
 you `lodash-es` looks like `lodash`. It cannot tell you `lodash-es` is fine and `lodahs` is not. That needs
 something that reads the README and the publisher and makes a judgment.
 
